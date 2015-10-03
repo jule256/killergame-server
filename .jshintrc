@@ -1,0 +1,249 @@
+// CLX.Tracker 3.0 Bonnie JSHint options file
+// see http://www.jshint.com/docs/options/ for more details
+
+{
+    // ENFORCING OPTIONS
+
+    // Whether bitwise operators (&, |, ^, etc.) should be forbidden.
+    "bitwise": true,
+    
+    "camelcase": false,
+    
+    // Whether curly braces around all blocks should be required.
+    "curly": false,
+    
+    // Whether `===` and `!==` should be required (instead of `==` and `!=`).
+    "eqeqeq": true,
+    
+    // This option tells JSHint that your code needs to adhere to ECMAScript 3 specification. 
+    "es3": false,
+    
+    // Whether `for in` loops must filter with `hasOwnPrototype`.
+    "forin": true,
+    
+    // This options prohibits overwriting prototypes of native
+    // objects such as Array, Date and so on.
+    "freeze": false,
+    
+    // Whether immediate invocations must be wrapped in parens, e.g.
+    // `( function(){}() );`.
+    "immed": false,
+    
+    // Whether constructor names must be capitalized.
+    "newcap": false,
+    
+    // Whether arguments.caller and arguments.callee should be forbidden.
+    "noarg": true,
+    
+    // Whether empty blocks should be forbidden.
+    "noempty": true,
+    
+    // Whether using `new` for side-effects should be forbidden.
+    "nonew": true,
+    
+    // Whether increment and decrement (`++` and `--`) should be forbidden.
+    "plusplus": false,
+    
+    // Whether variables must be declared before used.
+    "undef": true,
+    
+    // Whether the "use strict"; pragma should be required.
+    "strict": true,
+    
+    // Whether trailing whitespace rules apply.
+    "trailing": false,
+    
+    // Whether use before define should be forbidden.
+    "latedef": false,
+    
+    "unused": false,
+    
+    // Specify indentation.
+    "indent": 4,
+    
+    // "quotmark":
+    
+    // This option lets you set the max number of formal parameters allowed per function:
+    // "maxparams":
+    
+    // This option lets you control how nested do you want your blocks to be:
+    // "maxdepth":
+    
+    // This option lets you set the max number of statements allowed per function
+    // "maxstatements":
+    
+    // 
+    // "maxcomplexity":
+    
+    // This option lets you set the maximum length of a line.
+    "maxlen": 120,
+    
+    // RELAXING OPTIONS
+    
+    // Whether automatic semicolon insertion should be allowed.
+    "asi": false,
+    
+    // Whether assignments inside `if`, `for` and `while` should be allowed. Usually
+    // conditions and loops are for comparison, not assignments.
+    "boss": false,
+    
+    // Whether debugger statements should be allowed.
+    "debug": false,
+    
+    // Whether `== null` comparisons should be allowed, even if `eqeqeq` is `true`.
+    "eqnull": false,
+    
+    // Whether es.next specific syntax should be allowed.
+    "esnext": false,
+    
+    // Whether `eval` should be allowed.
+    "evil": true,
+    
+    // Whether ExpressionStatement should be allowed as Programs.
+    "expr": false,
+    
+    // Whether only function scope should be used for scope tests.
+    "funcscope": false,
+    
+    // Whether global "use strict"; should be allowed (also enables strict).
+    "globalstrict": false,
+    
+    // Whether the `__iterator__` property should be allowed.
+    "iterator": false,
+    
+    // Whether semicolons may be ommitted for the  statements inside of a
+    // one-line blocks.
+    "lastsemic": false,
+    
+    // Whether line breaks should not be checked, e.g. `return [\n] x`.
+    "laxbreak": false,
+    
+    // Whether line breaks should not be checked around commas.
+    "laxcomma": false,
+    
+    // Whether functions should be allowed to be defined within loops.
+    "loopfunc": true,
+    
+    // This options tells JSHint that your code uses Mozilla JavaScript extensions.
+    // Unless you develop specifically for the Firefox web browser you don't need this option.
+    // "moz":
+    
+    // Allow multiline strings.
+    "multistr": false,
+    
+    // This option suppresses warnings about invalid typeof operator values. 
+    // "notypeof":
+    
+     // Whether the `__proto__` property should be allowed.
+    "proto": false,
+    
+     // Whether script-targeted URLs should be allowed.
+    "scripturl": false,
+    
+    // Whether smarttabs should be allowed
+    // (http://www.emacswiki.org/emacs/SmartTabs).
+    "smarttabs": false,
+    
+    // Whether variable shadowing should be allowed.
+    "shadow": false,
+    
+    // Whether all forms of subscript notation are allowed.
+    "sub": false,
+    
+    // Whether `new function () { ... };` and `new Object;` should be allowed.
+    "supernew": false,
+    
+    // Whether `this` inside a non-constructor function should be allowed.
+    "validthis": false,
+    
+    // ENVIRONMENTS
+    
+    // Whether the standard browser globals should be predefined.
+    "browser": false,
+    
+    // Whether CouchDB globals should be predefined.
+    "couch": false,
+    
+    // Whether logging globals should be predefined (console, alert, etc.).
+    "devel": false,
+    
+    // Whether Dojo Toolkit globals should be predefined.
+    "dojo": false,
+    
+    // Whether jQuery globals should be predefined.
+    "jquery": false,
+    
+    // Whether MooTools globals should be predefined.
+    "mootools": false,
+    
+    // Whether the Node.js environment globals should be predefined.
+    "node": false,
+    
+    // Whether non-standard (but widely adopted) globals should be predefined.
+    "nonstandard": false,
+    
+    // This option defines globals available when your core is running inside of the PhantomJS runtime environment. 
+    // "phantom": false,
+    
+    // Whether Prototype and Scriptaculous globals should be predefined.
+    "prototypejs": false,
+    
+    // Whether the Rhino environment globals should be predefined.
+    "rhino": false,
+    
+    // This option defines globals available when your code is running inside of a Web Worker. 
+    // "worker": 
+    
+    // Whether the Windows Scripting Host environment globals should be predefined.
+    "wsh": false,
+    
+    // LEGACY
+    
+    // Whether names should be checked for leading or trailing underscores
+    // (object._attribute would be forbidden).
+    "nomen": false,
+    
+    // Whether only one var statement per function should be allowed.
+    "onevar": false,
+
+    // Whether the scan should stop on first error.
+    "passfail": false,
+    
+    // Whether strict whitespace rules apply.
+    "white": false,
+    
+    // OTHER
+    
+    // Maximum errors before stopping.
+    "maxerr": 50,
+    
+    // Custom predefined globals.
+    // For value examples, see https://github.com/jshint/jshint/blob/c047ea1b01097fcc220fcd1a55c41f67ae2e6e81/jshint.js#L556
+    "globals":  {
+        "define": true,
+        "$": true,
+        "moment": true,
+        "window": true,
+        "alert": true,
+        "console": true,
+        "setTimeout": true,
+        "require": true,
+        "module": true
+    },
+    
+    // MORE OTHER
+    
+    // Whether ES5 syntax should be allowed.
+    "es5": false,
+    
+    // Whether `.` should be forbidden in regexp literals.
+    "regexp": false,
+
+    // Whether unescaped first/last dash (-) inside brackets in regexps should be allowed.
+    "regexdash": false,
+
+    // Whether one-case switch statements should be allowed.
+    "onecase": false
+   
+}
+

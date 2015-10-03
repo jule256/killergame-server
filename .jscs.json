@@ -1,0 +1,46 @@
+{
+    "requireSpacesInFunctionExpression": {
+        "beforeOpeningCurlyBrace": true
+    },
+    "requireSpaceBeforeBlockStatements": true,
+    "requireCurlyBraces": [ "if", "else", "for", "while", "do", "try", "catch" ],
+    "requireSpaceAfterKeywords": [ "if", "else", "for", "while", "do", "switch", "return", "try", "catch" ],
+    "requireSpaceAfterBinaryOperators": true,
+    "requireSpaceBeforeBinaryOperators": [ "+", "-", "/", "*", "=", "==", "===", "!=", "!==", "||", "&&", ">=", "<=", "<", ">", "%", "+=", "-=", "/=", "*=" ],
+    "requireSpacesInsideObjectBrackets": "allButNested",
+    "requireSpacesInsideArrayBrackets": "allButNested",
+    "requireOperatorBeforeLineBreak": true,
+    "requireCommaBeforeLineBreak": true,
+    "requireDotNotation": true,
+    "requireSpacesInConditionalExpression": true,
+    "requireLineFeedAtFileEnd": true,
+    "disallowSpacesInFunctionExpression": {
+        "beforeOpeningRoundBrace": true
+    },
+    "disallowSpaceAfterObjectKeys": true,
+    "disallowEmptyBlocks": true,
+    "disallowMultipleLineBreaks": true,
+    "disallowMixedSpacesAndTabs": true,
+    "disallowTrailingWhitespace": true,
+    "disallowMultipleLineStrings": true,
+    "disallowTrailingComma": true,
+    "disallowSpaceAfterPrefixUnaryOperators": true,
+    "disallowSpaceBeforePostfixUnaryOperators": true,
+    "disallowSpaceBeforeBinaryOperators": [ ",", ":", ";" ],
+    "validateQuoteMarks": "'",
+    "validateJSDoc": {
+        "checkParamNames": true,
+        "checkRedundantParams": true,
+        "requireParamTypes": true
+    },
+    "maximumLineLength": {
+        "value": 120,
+        "tabSize": 4,
+        "allowComments": true,
+        "allowUrlComments": true,
+        "allowRegex": true
+    },
+    "globals": {
+        "require": false
+    }
+}

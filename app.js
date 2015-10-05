@@ -1,3 +1,7 @@
+/* jshint node: true */
+
+'use strict';
+
 var express = require('express'),
     path = require('path'),
     favicon = require('serve-favicon'),
@@ -7,11 +11,14 @@ var express = require('express'),
 
 var db = require('./model/db'),
     blob = require('./model/blobs'),
-    playerModel = require('./model/player');
+    playerModel = require('./model/player'),
+    gameModel = require('./model/game');
 
 var routes = require('./routes/index'),
     blobs = require('./routes/blobs'),
-    register = require('./routes/register');
+    register = require('./routes/register'),
+    game = require('./routes/game'),
+    dev = require('./routes/dev');
 
 //var users = require('./routes/users');
 
@@ -30,8 +37,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/blobs', blobs);
+//app.use('/blobs', blobs);
 app.use('/register', register);
+app.use('/game', game);
+app.use('/dev', dev);
 //app.use('/users', users);
 
 // catch 404 and forward to error handler
@@ -64,6 +73,5 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
-
 
 module.exports = app;

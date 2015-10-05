@@ -1,4 +1,3 @@
-// CLX.Tracker 3.0 Bonnie JSHint options file
 // see http://www.jshint.com/docs/options/ for more details
 
 {
@@ -220,15 +219,13 @@
     // Custom predefined globals.
     // For value examples, see https://github.com/jshint/jshint/blob/c047ea1b01097fcc220fcd1a55c41f67ae2e6e81/jshint.js#L556
     "globals":  {
-        "define": true,
-        "$": true,
-        "moment": true,
-        "window": true,
-        "alert": true,
-        "console": true,
-        "setTimeout": true,
-        "require": true,
-        "module": true
+        "define": false,
+        "$": false,
+        "console": false,
+        "setTimeout": false,
+        "require": false,
+        "module": false,
+        "__dirname": false
     },
     
     // MORE OTHER

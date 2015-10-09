@@ -101,7 +101,14 @@ gameSchema.methods.validateMoveData = function validateMoveData(moveData) {
         this.error = 'it is not your turn';
         return false;
     }
-
+    if (!this.validateMoveDataInsideBounds(moveData.x, moveData.y)) {
+        this.error = 'coordinates are not within bounds';
+        return false;
+    }
+    if (!this.validateMoveDataSlotAvailable(moveData.x, moveData.y)) {
+        this.error = 'slot ' + moveData.x + '/' + moveData.y + ' cannot be used';
+        return false;
+    }
 
     this.error = '';
     return true;
@@ -132,6 +139,39 @@ gameSchema.methods.validateMoveDataPlayer = function validateMoveDataPlayer(user
     }
 };
 
+/**
+ * checks if the given coordinates are within the bounds of the field
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
+gameSchema.methods.validateMoveDataInsideBounds = function validateMoveDataInsideBounds(x, y) {
+    return x < this.fieldWidth && y < this.fieldHeight;
+};
+
+/**
+ * checks if the slot of the given coordinates is still empty
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @param {number} x
+ * @param {number} y
+ * @returns {boolean}
+ */
+gameSchema.methods.validateMoveDataSlotAvailable = function validateMoveDataSlotAvailable(x, y) {
+    var fieldObj = JSON.parse(this.field);
+    return fieldObj[x][y] === '';
+};
+
+/**
+ * returns the current (validation)error as string
+ *
+ * @todo maybe return 2 values, a string and a numeric error-identifier
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @returns {string}
+ */
 gameSchema.methods.getValidateMoveDataError = function getMoveDataError() {
     return this.error;
 };

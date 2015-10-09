@@ -46,25 +46,39 @@ router.param('gameId', function(req, res, next, gameId) {
 router.route('/')
     // GET
     .get(function(req, res, next) {
-        var game1,
-            game2;
-
-        GameReposiory.getGame(1444340075724, 'finished', 'spieler 1').then(function(game) {
+        var moveData = {
+            x: 5,
+            y: 6,
+            username: 'spieler 1',
+            gameId: '1444404958379'
+        };
+        GameReposiory.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
             // resolve callback
-            game1 = game;
-            game2 = game.sanitizeForOutput();
 
-            res.json({
-                game1: game1,
-                game2: game2
+            // making the move
+            game.makeMove(moveData);
+
+            game.checkForWin(moveData);
+
+            res.format({
+                json: function() {
+                    res.json({
+                        route: 'GET /dev',
+                        message: 'success'
+                    });
+                }
             });
         }, function(error) {
             // error callback
-            res.json({
-                status: 'failed'
+            res.format({
+                json: function() {
+                    res.json({
+                        route: 'GET /dev',
+                        message: 'getGame() failed'
+                    });
+                }
             });
         });
-
 
     })
     // POST

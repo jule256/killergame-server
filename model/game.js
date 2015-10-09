@@ -1,5 +1,8 @@
 /* jshint node: true */
 
+// also possible to use statics, but I think I wanna keep statics in the repository
+// http://mongoosejs.com/docs/guide.html
+
 'use strict';
 
 var mongoose = require('mongoose');
@@ -18,8 +21,6 @@ var gameSchema = new mongoose.Schema({
 
 /**
  * @author Julian Mollik <jule@creative-coding.net>
- * @param params
- * @param callback
  */
 gameSchema.methods.initialize = function initialize() {
     var fieldObj = [],
@@ -36,14 +37,10 @@ gameSchema.methods.initialize = function initialize() {
 
 /**
  * @author Julian Mollik <jule@creative-coding.net>
- * @param moveData
+ * @param {object} moveData
  */
 gameSchema.methods.makeMove = function makeMove(moveData) {
     var fieldObj = JSON.parse(this.field);
-
-//  console.log('gameSchema.makeMove() moveData', moveData);
-//  console.log('gameSchema.makeMove() this', this);
-//  console.log('gameSchema.makeMove() fieldObj', fieldObj);
 
     fieldObj[moveData.y][moveData.x] = this.getPiece();
 
@@ -51,9 +48,7 @@ gameSchema.methods.makeMove = function makeMove(moveData) {
 
     this.printField();
 
-    // @todo check for win
-
-    this.changeActivePlayer();
+    // this.changeActivePlayer(); // @todo move after check-for-win
 };
 
 /**
@@ -75,19 +70,23 @@ gameSchema.methods.printField = function printField() {
         x,
         y,
         line = '',
-        frame = '';
-    for (y = 0; y < Math.floor((this.fieldWidth + 4) / 2); y++) {
-        frame += '* ';
+        frame1 = '    ',
+        frame2 = '    ';
+    for (x = 0; x < Math.floor((this.fieldWidth) / 2); x++) {
+        frame1 += '| ';
+        frame2 += (x * 2) + ' ';
     }
-    console.log(frame);
-    for (x = 0; x < this.fieldHeight; x++) {
-        for (y = 0; y < this.fieldWidth; y++) {
+    console.log(frame1);
+    console.log(frame2);
+    for (y = 0; y < this.fieldHeight; y++) {
+        for (x = 0; x < this.fieldWidth; x++) {
             line += fieldObj[x][y] === '' ? '□' : fieldObj[x][y];
         }
-        console.log('* ' + line + ' *');
+        console.log('- ' + y + ' ' + line + ' ' + y + ' -');
         line = '';
     }
-    console.log(frame);
+    console.log(frame2);
+    console.log(frame1);
 };
 
 /**
@@ -176,20 +175,172 @@ gameSchema.methods.getValidateMoveDataError = function getMoveDataError() {
     return this.error;
 };
 
+gameSchema.methods.checkForWin = function checkForWin(moveData) {
+    var setCoord;
+
+    console.log('checkForWin() moveData: ', moveData);
+    console.log('checkForWin() activePlayer', this.activePlayer);
+
+    // check E and W
+    console.log('------------------- E/W');
+    setCoord = [ [moveData.x, moveData.y, '(0)'] ];
+    this.modifyField(moveData.x, moveData.y, setCoord.length);
+    setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 0, -1, 0);
+    if (setCoord.length === 5) {
+        console.log('checkForWin() WIN at E/W:', setCoord, ' -> length ' + setCoord.length);
+        this.printField();
+        return;
+    }
+    console.log('E/W result:', setCoord, ' -> length ' + setCoord.length);
+
+    // check N and S
+    console.log('------------------- N/S');
+    setCoord = [ [moveData.x, moveData.y, '(0)'] ];
+    this.modifyField(moveData.x, moveData.y, setCoord.length);
+    setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 0, 1, 0, -1);
+    if (setCoord.length === 5) {
+        console.log('checkForWin() WIN at N/S:', setCoord, ' -> length ' + setCoord.length);
+        this.printField();
+        return;
+    }
+    console.log('N/S result:', setCoord, ' -> length ' + setCoord.length);
+
+    // check NW and SE
+    console.log('------------------- NW/SE');
+    setCoord = [ [moveData.x, moveData.y, '(0)'] ];
+    this.modifyField(moveData.x, moveData.y, setCoord.length);
+    setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 1, -1, -1);
+    if (setCoord.length === 5) {
+        console.log('checkForWin() WIN at NW/SE:', setCoord, ' -> length ' + setCoord.length);
+        this.printField();
+        return;
+    }
+    console.log('NW/SE result:', setCoord, ' -> length ' + setCoord.length);
+
+    // check NE and SW
+    console.log('------------------- NE/SW');
+    setCoord = [ [moveData.x, moveData.y, '(0)'] ];
+    this.modifyField(moveData.x, moveData.y, setCoord.length);
+    setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, -1, 1, 1, -1);
+    if (setCoord.length === 5) {
+        console.log('checkForWin() WIN at NE/SW:', setCoord, ' -> length ' + setCoord.length);
+        this.printField();
+        return;
+    }
+    console.log('NE/SW result:', setCoord, ' -> length ' + setCoord.length);
+
+    this.printField();
+};
+
+gameSchema.methods.checkForWinDirection1 =
+    function checkForWinDirection1(startX, startY, setCoord, boundsModX, boundsModY, incrementModX, incrementModY) {
+
+    var piece = this.getPiece(), // is 'x' or 'o'
+        fieldObj = JSON.parse(this.field),
+        x,
+        y;
+
+    console.log('checkForWinDirection1(), startX: ' + startX + ', boundsModX: ' + boundsModX + ', incrementModX: ' + incrementModX);
+    console.log('checkForWinDirection1(), startY: ' + startY + ', boundsModY: ' + boundsModY + ', incrementModY: ' + incrementModY);
+    console.log('checkForWinDirection1(), setting x to ' + (startX + boundsModX * 1));
+    console.log('checkForWinDirection1(), continuing at x >= ' + (startX + boundsModX * 4));
+    console.log('checkForWinDirection1(), setting y to ' + (startY + boundsModY * 1));
+    console.log('checkForWinDirection1(), continuing at y >= ' + (startY + boundsModY * 4));
+
+    for (x = (startX - boundsModX * 1), y = (startY - boundsModY * 1);
+         true; // bounds-check is ensured by 'setCoord.length === 5' and 'validateMoveDataInsideBounds()'
+         x = x + incrementModX * 1,     y = y + incrementModY * 1) {
+
+        console.log('checking ' + x + '/' + y + ' -> "' + fieldObj[x][y] + '", piece = ' + piece);
+
+        if (this.validateMoveDataInsideBounds(x, y)) {
+            if (fieldObj[x][y] === piece) {
+                setCoord.push([x, y, '(1)']);
+                this.modifyField(x, y, setCoord.length);
+                if (setCoord.length === 5) {
+                    return setCoord;
+                }
+            }
+            else {
+                console.log('about to call checkForWinDirection2() 1');
+                return this.checkForWinDirection2(startX, startY, setCoord, boundsModX, boundsModY, incrementModX, incrementModY);
+            }
+        }
+        else {
+            console.log('about to call checkForWinDirection2() 2');
+            return this.checkForWinDirection2(startX, startY, setCoord, boundsModX, boundsModY, incrementModX, incrementModY);
+        }
+    }
+    return this.checkForWinDirection2(startX, startY, setCoord, boundsModX, boundsModY, incrementModX, incrementModY);
+};
+
+gameSchema.methods.checkForWinDirection2 =
+    function checkForWinDirection2(startX, startY, setCoord, boundsModX, boundsModY, incrementModX, incrementModY) {
+
+    var piece = this.getPiece(), // is 'x' or 'o'
+        fieldObj = JSON.parse(this.field),
+        x,
+        y;
+
+    console.log('checkForWinDirection2(), startX: ' + startX + ', boundsModX: ' + boundsModX + ', incrementModX: ' + incrementModX);
+    console.log('checkForWinDirection2(), startY: ' + startY + ', boundsModY: ' + boundsModY + ', incrementModY: ' + incrementModY);
+    console.log('checkForWinDirection2(), setCoord: ', setCoord);
+    console.log('checkForWinDirection2(), setting x to ' + (startX + boundsModX * 1));
+    console.log('checkForWinDirection2(), continuing at x =< ' + (startX + boundsModX * 4));
+    console.log('checkForWinDirection2(), setting y to ' + (startY + boundsModY * 1));
+    console.log('checkForWinDirection2(), continuing at y =< ' + (startY + boundsModY * 4));
+
+    for (x = (startX + boundsModX * 1), y = (startY + boundsModY * 1);
+         true; // bounds-check is ensured by 'setCoord.length === 5' and 'validateMoveDataInsideBounds()'
+         x = x + incrementModX * -1,    y = y + incrementModY * -1) {
+
+        console.log('checkForWinDirection2() loop, checking: ' + x + '/' + y + ' ...');
+
+        if (this.validateMoveDataInsideBounds(x, y)) {
+            if (fieldObj[x][y] === piece) {
+                setCoord.push([x, y, '(2)']);
+                this.modifyField(x, y, setCoord.length);
+                if (setCoord.length === 5) {
+                    return setCoord;
+                }
+            }
+            else {
+                return setCoord;
+            }
+        }
+        else {
+            return setCoord;
+        }
+    }
+    return setCoord;
+};
+
 /**
- * removes
+ * this debugging method allows to set an arbitrary value at the given coordinates on the field of this game
  *
- * @todo check if cloning is needed
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @param {number} x
+ * @param {number} y
+ * @param {string} value
+ */
+gameSchema.methods.modifyField = function modifyField(x, y, value) {
+    var fieldObj = JSON.parse(this.field);
+    fieldObj[x][y] = value;
+    this.field = JSON.stringify(fieldObj);
+};
+
+/**
+ * creates a clone of this game and removes all "unnecessary" key-value-pairs before returning it
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @returns {gameSchema.methods}
  */
 gameSchema.methods.sanitizeForOutput = function sanitizeForOutput() {
-    var obj = (JSON.parse(JSON.stringify(this))); // "cloning" this
-    obj.created_at = undefined;
-    obj.__v = undefined;
-    obj._id = undefined;
-    return obj;
+    var gameObj = (JSON.parse(JSON.stringify(this))); // "cloning" this
+    gameObj.created_at = undefined;
+    gameObj.__v = undefined;
+    gameObj._id = undefined;
+    return gameObj;
 };
 
 mongoose.model('Game', gameSchema);

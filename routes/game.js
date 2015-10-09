@@ -76,7 +76,7 @@ router.route('/')
             GameReposiory.createGame(gameModel, newGameData).then(function(game) {
                 // resolve callback
                 res.json({
-                    game: game
+                    game: game.sanitizeForOutput()
                 });
             }, function(error) {
                 // error callback
@@ -118,6 +118,8 @@ router.route('/:gameId')
 
             // making the move
             game.makeMove(moveData);
+
+            game.checkForWin(moveData);
 
             // saving the game to database
             game.save(function (err) {

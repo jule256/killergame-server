@@ -8,6 +8,7 @@ var express = require('express'),
     bodyParser = require('body-parser'), //parses information from POST
     methodOverride = require('method-override'), //used to manipulate POST
     Promise = require('bluebird'),
+    GameReposiory = require('../repository/game'),
     aFunction;
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -22,44 +23,49 @@ router.use(methodOverride(function(req, res) {
 }));
 
 aFunction = function(param) {
-    var promise = new Promise();
+    return new Promise(function(resolve, reject) {
 
-    if (param === 2) {
-        promise.resolve('param was 2');
-    }
-    else {
-        promise.reject('param was not 2');
-    }
 
-    return promise;
+        if (param === 2) {
+            resolve('param was 2');
+        }
+        else {
+            reject('param was not 2');
+        }
+
+    });
 };
+
+// route middleware to validate :gameId and add it to the req-object
+router.param('gameId', function(req, res, next, gameId) {
+    // @todo gameId validation
+    req.gameId = gameId;
+    next();
+});
 
 router.route('/')
     // GET
     .get(function(req, res, next) {
-        var param = 2;
+        var game1,
+            game2;
 
-        aFunction(2).then(function(result) {
-            res.format({
-                json: function() {
-                    res.json({
-                        route: 'GET /dev',
-                        promise: 'resolved',
-                        result: result
-                    });
-                }
+        GameReposiory.getGame(1444340075724, 'finished', 'spieler 1').then(function(game) {
+            // resolve callback
+            game1 = game;
+            game2 = game.sanitizeForOutput();
+
+            res.json({
+                game1: game1,
+                game2: game2
             });
-        }, function(result) {
-            res.format({
-                json: function() {
-                    res.json({
-                        route: 'GET /dev',
-                        promise: 'rejected',
-                        result: result
-                    });
-                }
+        }, function(error) {
+            // error callback
+            res.json({
+                status: 'failed'
             });
         });
+
+
     })
     // POST
     .post(function(req, res) {
@@ -71,6 +77,20 @@ router.route('/')
                 });
             }
         });
+    });
+
+router.route('/:gameId')
+    // PUT
+    .put(function(req, res) {
+        res.format({
+            json: function() {
+                res.json({
+                    route: 'PUT /dev',
+                    payload: this.gameId
+                });
+            }
+        });
+
     });
 
 module.exports = router;

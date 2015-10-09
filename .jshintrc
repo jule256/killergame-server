@@ -176,7 +176,7 @@
     "mootools": false,
     
     // Whether the Node.js environment globals should be predefined.
-    "node": false,
+    "node": true,
     
     // Whether non-standard (but widely adopted) globals should be predefined.
     "nonstandard": false,
@@ -225,7 +225,8 @@
         "setTimeout": false,
         "require": false,
         "module": false,
-        "__dirname": false
+        "__dirname": false,
+        "require": false
     },
     
     // MORE OTHER

@@ -36,6 +36,10 @@ router.route('/')
 
         // @todo rework with limit/filter/offset?
 
+        Auxiliary.sendErrorResponse(res, {
+            text: 'GETLIST /register is not implemented yet'
+        });
+        /*
         mongoose.model('Player').find({}, function (err, players) {
             if (err) {
                 return console.error(err);
@@ -48,6 +52,7 @@ router.route('/')
                 });
             }
         });
+        /**/
     })
     // POST a new player
     .post(function(req, res, next) {
@@ -85,11 +90,31 @@ router.route('/:playerId')
             Auxiliary.sendErrorResponse(res, error);
         });
     })
-    // PUT to set a game piece
+    // PUT to update a player
     .put(function(req, res) {
+        var playerData = PlayerRepository.getPlayerData(req.body, req.playerId),
+            playerModel = mongoose.model('Player');
 
-        // @todo implement player-data edit
-
+        PlayerRepository.validatePlayerData(playerData).then(function() {
+            // resolve callback
+            PlayerRepository.updatePlayer(playerModel, playerData).then(function(player) {
+                // resolve callback
+                res.json({
+                    player: player.sanitizeForOutput()
+                });
+            }, function(error) {
+                // error callback
+                Auxiliary.sendErrorResponse(res, error);
+            });
+        }, function(error) {
+            // error callback
+            Auxiliary.sendErrorResponse(res, error);
+        });
+    })
+    .delete(function (req, res){
+        Auxiliary.sendErrorResponse(res, {
+            text: 'DELETE /player is not implemented yet'
+        });
     });
 
 module.exports = router;

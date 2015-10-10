@@ -119,7 +119,17 @@ router.route('/:gameId')
             // making the move
             game.makeMove(moveData);
 
-            game.checkForWin(moveData);
+            // @todo check for draw
+
+            if (game.checkForWin(moveData)) {
+                console.log('this is a win');
+            }
+            else {
+                // game is not over yet, change to other player
+                game.changeActivePlayer();
+            }
+
+            game.printField();
 
             // saving the game to database
             game.save(function (err) {

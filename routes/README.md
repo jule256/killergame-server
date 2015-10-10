@@ -4,7 +4,7 @@
 **@todo:** documentation of responses in case of errors
 
 ### Endpoint GAME
-**POST /game** creates a new game for <usernamePlayer1> and <usernamePlayer2>
+**POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>`
 ```
 Payload
 {

@@ -14,7 +14,7 @@ Payload
     "password_1": "<a-secret-pw>",
     "password_2": "<the-same-secret-pw>"
 }
-Example {"name": "Spieler 3", "username": "spieler_3", "email": "spieler3@example.com", "password_1": "a-secret-pw", "password_2": "a-secret-pw"}
+Example {"name": "Spieler 3", "username": "spieler_3", "email": "spieler3@example.com", "password_1": "ein-passwort", "password_2": "ein-passwort"}
 ```
 ```
 Response
@@ -47,6 +47,35 @@ Response
 	    }
    }
 ```
+**PUT /register/`<playerId>`** updates the data of the player with the given `<playerId>`
+```
+Payload
+{
+    "name": "<name of the player>",
+    "email": "<email-address of the player>",
+    "password_1": "<a-new-secret-pw>",
+    "password_2": "<the-same-new-secret-pw>"
+}
+Example {"name": "Spieler 3 neu", "email": "spieler3neu@example.com", "password_1": "ein-neues-passwort", "password_2": "ein-neues-passwort"}
+```
+```
+Response
+    {
+        "game": {
+            "field": "[<field>]", // JSON stringified array
+            "player1": "<usernamePlayer1>",
+            "player2": "<usernamePlayer2>",
+            "setCoord": [], // will contain the coordinates of the winning set if the game is over
+            "status": "<status>", // can be 'inprogress' or 'finished'
+            "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
+            "fieldHeight": 10,
+            "fieldWidth": 10,
+            "gameId": <gameId> // the gameId is needed for all game related requests
+        }
+        // @todo maybe add "lastMoveData" to the response
+    }
+```
+**DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(not implemented yet)
 ### Endpoint GAME
 **POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>`
 ```

@@ -1,5 +1,8 @@
 # REST API
-![]({{site.baseurl}}/https://cdn2.iconfinder.com/data/icons/diagona/icon/16/050.png) Don't forget to add the Header "_Content-Type application/json_" to your requests.
+⚠  Don't forget to add the Header "_Content-Type application/json_" to your requests.
+
+**@todo:** documentation of responses in case of errors
+
 ### Endpoint GAME
 **POST /game** creates a new game for <usernamePlayer1> and <usernamePlayer2>
 ```

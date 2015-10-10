@@ -3,6 +3,50 @@
 
 **@todo:** documentation of responses in case of errors
 
+### Endpoint REGISTER
+**POST /register** creates a new player with the given payload
+```
+Payload
+{
+    "name": "<name of the player>",
+    "username": "<username of the player>",
+    "email": "<email-address of the player>",
+    "password_1": "<a-secret-pw>",
+    "password_2": "<the-same-secret-pw>"
+}
+Example {"name": "Spieler 3", "username": "spieler_3", "email": "spieler3@example.com", "password_1": "a-secret-pw", "password_2": "a-secret-pw"}
+```
+```
+Response
+    {
+        "player": {
+        	"playerId": <playerId> // the playerId is needed for all player related requests
+	        "password": "<the hashed secret password>",
+	        "name": "<name of the player>",
+	        "email": "<email-address of the player>",
+	        "username": "<username of the player>",
+	        "active": true,
+	        "score": 0
+	    }
+    }
+```
+**GET /register** lists all players (not implemented yet)
+
+**GET /register/`<playerId>`** returns data of the player with the id `<playerId>`
+```
+Response
+    {
+        "player": {
+        	"playerId": <playerId> // the playerId is needed for all player related requests
+	        "password": "<the hashed secret password>",
+	        "name": "<name of the player>",
+	        "email": "<email-address of the player>",
+	        "username": "<username of the player>",
+	        "active": true,
+	        "score": 0
+	    }
+   }
+```
 ### Endpoint GAME
 **POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>`
 ```

@@ -1,7 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose'), // mongo connection
-    Promise = require('bluebird'), // used to be able to use
+    Promise = require('bluebird'), // to use promises
     GameRepository;
 
 GameRepository = {
@@ -50,7 +50,7 @@ GameRepository = {
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {object} reqBody
-     * @returns {{player1: *, player2: *}}
+     * @returns {{player1: string, player2: string}}
      */
     getNewGameData: function(reqBody) {
         return {
@@ -94,7 +94,8 @@ GameRepository = {
             query.find(function (err, players) {
                 if (err) {
                     reject({
-                        text: 'player not found in database'
+                        text: 'there was an error querying the database',
+                        key: 'database_0001'
                     });
                 }
 

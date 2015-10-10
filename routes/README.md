@@ -31,7 +31,7 @@ Response
 ```
 **GET /game** lists all games (not implemented yet)
 
-**GET /game/<gameId>** returns data of the game with the id <gameId>
+**GET /game/`<gameId>`** returns data of the game with the id `<gameId>`
 ```
 Response
     {
@@ -48,7 +48,7 @@ Response
         }
     }
 ```
-**PUT /game/<gameId>** puts a piece at the coordinate <x coordinate>/<y coordinate> for the username <theUsername> in the game with the id <gameId>
+**PUT /game/`<gameId>`** puts a piece at the coordinate `<x coordinate>`/`<y coordinate>` for the username `<theUsername>` in the game with the id `<gameId>`
 ```
 Payload
 {

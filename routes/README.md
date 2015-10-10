@@ -42,8 +42,8 @@ Response
 	        "name": "<name of the player>",
 	        "email": "<email-address of the player>",
 	        "username": "<username of the player>",
-	        "active": true,
-	        "score": 0
+	        "active": <boolean>, // true or false
+	        "score": <number> // the current score of the player
 	    }
    }
 ```

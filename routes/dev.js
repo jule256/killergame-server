@@ -38,7 +38,6 @@ aFunction = function(param) {
 
 // route middleware to validate :gameId and add it to the req-object
 router.param('gameId', function(req, res, next, gameId) {
-    // @todo gameId validation
     req.gameId = gameId;
     next();
 });

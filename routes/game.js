@@ -5,8 +5,8 @@ var express = require('express'),
     mongoose = require('mongoose'), // mongo connection
     bodyParser = require('body-parser'), // parses information from POST
     methodOverride = require('method-override'), // used to manipulate POST
-    GameReposiory = require('../repository/game'),
-    setError; // @todo think of a better function name
+    GameRepository = require('../repository/game'),
+    Auxiliary = require('../app/auxiliary');
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(methodOverride(function(req, res) {
@@ -18,25 +18,6 @@ router.use(methodOverride(function(req, res) {
         return method;
     }
 }));
-
-/**
- * @todo duplicated in every route, needs to be moved to a more central location
- * @author Julian Mollik <jule@creative-coding.net>
- * @param res
- * @param errorobj
- */
-setError = function(res, errorobj) {
-    var errorcode = errorobj.code || 418,
-        errortext = errorobj.text || 'unknown error';
-    res.status(errorcode);
-    res.format({
-        json: function() {
-            res.json({
-                error: errortext
-            });
-        }
-    });
-};
 
 // accumulating parameters ------
 
@@ -68,49 +49,49 @@ router.route('/')
     })
     // POST create a new game
     .post(function(req, res, next) {
-        var newGameData = GameReposiory.getNewGameData(req.body),
+        var newGameData = GameRepository.getNewGameData(req.body),
             gameModel = mongoose.model('Game');
 
-        GameReposiory.validateNewGameData(newGameData).then(function() {
+        GameRepository.validateNewGameData(newGameData).then(function() {
             // resolve callback
-            GameReposiory.createGame(gameModel, newGameData).then(function(game) {
+            GameRepository.createGame(gameModel, newGameData).then(function(game) {
                 // resolve callback
                 res.json({
                     game: game.sanitizeForOutput()
                 });
             }, function(error) {
                 // error callback
-                setError(res, error);
+                Auxiliary.sendErrorResponse(res, error);
             });
         }, function(error) {
             // error callback
-            setError(res, error);
+            Auxiliary.sendErrorResponse(res, error);
         });
     });
 
 router.route('/:gameId')
-    // GET returns a game
+    // GET returns the game with the given id
     .get(function(req, res) {
         var gameId = req.gameId;
-        GameReposiory.getGame(gameId, 'finished').then(function(game) {
+        GameRepository.getGame(gameId, 'finished').then(function(game) {
             // resolve callback
             res.json({
-                game: game
+                game: game.sanitizeForOutput()
             });
         }, function(error) {
             // error callback
-            setError(res, error);
+            Auxiliary.sendErrorResponse(res, error);
         });
     })
     // PUT to set a game piece
     .put(function(req, res) {
-        var moveData = GameReposiory.getMoveData(req.body, req.gameId);
-        GameReposiory.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
+        var moveData = GameRepository.getMoveData(req.body, req.gameId);
+        GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
             // resolve callback
 
             // validation of move data
             if (!game.validateMoveData(moveData)) {
-                setError(res, {
+                Auxiliary.sendErrorResponse(res, {
                     text: game.getValidateMoveDataError()
                 });
                 return;
@@ -123,18 +104,22 @@ router.route('/:gameId')
 
             if (game.checkForWin(moveData)) {
                 console.log('this is a win');
+
+                // @todo handle win
+                // @todo increase player's score
             }
             else {
                 // game is not over yet, change to other player
                 game.changeActivePlayer();
             }
 
+            // for debugging/testing (check server's console output!)
             game.printField();
 
             // saving the game to database
             game.save(function (err) {
                 if (err) {
-                    setError(err.toString());
+                    Auxiliary.sendErrorResponse(res, err.toString());
                     return;
                 }
                 res.format({
@@ -149,7 +134,7 @@ router.route('/:gameId')
             });
         }, function(error) {
             // error callback
-            setError(res, error);
+            Auxiliary.sendErrorResponse(res, error);
         });
     });
 

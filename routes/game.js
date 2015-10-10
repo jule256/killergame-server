@@ -36,16 +36,9 @@ router.route('/')
 
         // @todo implement
 
-        console.log('game.js GET', req.body);
-
-        res.format({
-            json: function() {
-                res.json({
-                    route: 'game GET'
-                });
-            }
+        Auxiliary.sendErrorResponse(res, {
+            text: 'GETLIST /game is not implemented yet'
         });
-        
     })
     // POST create a new game
     .post(function(req, res, next) {
@@ -135,6 +128,11 @@ router.route('/:gameId')
         }, function(error) {
             // error callback
             Auxiliary.sendErrorResponse(res, error);
+        });
+    })
+    .delete(function (req, res){
+        Auxiliary.sendErrorResponse(res, {
+            text: 'DELETE /game is not implemented yet'
         });
     });
 

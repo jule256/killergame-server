@@ -6,11 +6,13 @@ var mongoose = require('mongoose'), // mongo connection
 
 GameRepository = {
     /**
+     * resolves with the game with the given gameId or rejects with an error if something went wrong
      *
      * @author Julian Mollik <jule@creative-coding.net>
-     * @param gameId
-     * @param status
-     * @param username
+     * @public
+     * @param {number} gameId
+     * @param {string} status
+     * @param {string | undefined} username
      * @returns {bluebird|exports|module.exports}
      */
     getGame: function (gameId, status, username) {
@@ -21,7 +23,7 @@ GameRepository = {
             }, function (err, game) {
                 if (!game) {
                     reject({
-                        text: 'game with id "' + gameId + '" does not exist X'
+                        text: 'game with id "' + gameId + '" does not exist'
                     });
                 }
                 else if (typeof username !== 'undefined') {
@@ -46,6 +48,7 @@ GameRepository = {
      * extracts the player1 and player2 value from the given reqBody object
      *
      * @author Julian Mollik <jule@creative-coding.net>
+     * @public
      * @param {object} reqBody
      * @returns {{player1: *, player2: *}}
      */
@@ -57,9 +60,11 @@ GameRepository = {
     },
 
     /**
+     * resolves if the given gameData is valid and otherwise rejects with an error
      *
      * @author Julian Mollik <jule@creative-coding.net>
-     * @param gameData
+     * @public
+     * @param {object} gameData
      * @returns {bluebird|exports|module.exports}
      */
     validateNewGameData: function(gameData) {
@@ -107,10 +112,12 @@ GameRepository = {
     },
 
     /**
+     * resolves if creating a new game with the given gameData was successful and otherwise rejects with an error
      *
      * @author Julian Mollik <jule@creative-coding.net>
-     * @param gameModel
-     * @param gameData
+     * @public
+     * @param {mongoose.model} gameModel
+     * @param {object} gameData
      * @returns {bluebird|exports|module.exports}
      */
     createGame: function(gameModel, gameData) {
@@ -146,6 +153,7 @@ GameRepository = {
      * and combines it with the given gameId to a return object
      *
      * @author Julian Mollik <jule@creative-coding.net>
+     * @public
      * @param {object} reqBody
      * @param {number} gameId
      * @returns {{x: number, y: number, username: string, gameId: number}}

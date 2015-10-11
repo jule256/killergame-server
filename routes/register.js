@@ -6,7 +6,8 @@ var express = require('express'),
     bodyParser = require('body-parser'), //parses information from POST
     methodOverride = require('method-override'), //used to manipulate POST
     PlayerRepository = require('../repository/player'),
-    Auxiliary = require('../app/auxiliary');
+    Auxiliary = require('../app/auxiliary'),
+    getList;
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(methodOverride(function(req, res) {
@@ -28,57 +29,46 @@ router.param('playerId', function(req, res, next, playerId) {
     next();
 });
 
+router.param('offset', function(req, res, next, offset) {
+    req.offset = offset;
+
+    console.log('setting offset', offset);
+
+    next();
+});
+
+router.param('limit', function(req, res, next, limit) {
+
+    console.log('param limit is ', limit);
+
+    req.limit = limit;
+
+    console.log('setting limit', limit);
+
+    next();
+});
+
+router.param('column', function(req, res, next, column) {
+    req.column = column;
+
+    console.log('setting column', column);
+
+    next();
+});
+
+router.param('direction', function(req, res, next, direction) {
+    req.direction = direction;
+
+    console.log('setting direction', direction);
+
+    next();
+});
+
 // actual routes ------
 
-router.route('/')
-    // GET returns all players
-    .get(function(req, res, next) {
-
-        // @todo rework with limit/filter/offset?
-
-        Auxiliary.sendErrorResponse(res, {
-            text: 'GETLIST /register is not implemented yet'
-        });
-        /*
-        mongoose.model('Player').find({}, function (err, players) {
-            if (err) {
-                return console.error(err);
-            }
-            else {
-                res.format({
-                    json: function() {
-                        res.json(players);
-                    }
-                });
-            }
-        });
-        /**/
-    })
-    // POST a new player
-    .post(function(req, res, next) {
-        var newPlayerData = PlayerRepository.getNewPlayerData(req.body),
-            playerModel = mongoose.model('Player');
-
-        PlayerRepository.validateNewPlayerData(newPlayerData).then(function() {
-            // resolve callback
-            PlayerRepository.createPlayer(playerModel, newPlayerData).then(function(player) {
-                // resolve callback
-                res.json({
-                    player: player.sanitizeForOutput()
-                });
-            }, function(error) {
-                // error callback
-                Auxiliary.sendErrorResponse(res, error);
-            });
-        }, function(error) {
-            // error callback
-            Auxiliary.sendErrorResponse(res, error);
-        });
-    });
-
-router.route('/:playerId')
+router.route('/:playerId(\\d+)') // (\\d+) ensures to trigger only on numbers
     // GET returns the player with the given id
-    .get(function(req, res) {
+    .get(function(req, res, next) {
         var playerId = req.playerId;
         PlayerRepository.getPlayer(playerId).then(function(player) {
             // resolve callback
@@ -111,10 +101,99 @@ router.route('/:playerId')
             Auxiliary.sendErrorResponse(res, error);
         });
     })
+    // DELETE to remove a player
     .delete(function (req, res){
         Auxiliary.sendErrorResponse(res, {
             text: 'DELETE /player is not implemented yet'
         });
     });
+
+/**
+ * handles GET requests to /
+ *                         /limit/<limit-value>
+ *                         /limit/<limit-value>/offset/<offset-value>
+ *                         /limit/<limit-value>/offset/<offset-value>/sort/<sort-column>/<sort-direction>
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @private
+ * @param {object} req
+ * @param {object} res
+ * @param {function} next
+ */
+getList = function(req, res, next) {
+    var params = PlayerRepository.getPlayerListData(req);
+
+    console.log('getList(), params:', params);
+
+    PlayerRepository.getPlayers(params).then(function(players) {
+        // resolve callback
+
+        console.log('resolve');
+
+        res.format({
+            json: function() {
+                res.json({
+                    text: 'GETLIST /register',
+                    params: params,
+                    players: players
+                });
+            }
+        });
+    }, function(error) {
+        // error callback
+
+        console.log('reject');
+
+        Auxiliary.sendErrorResponse(res, error);
+    });
+};
+
+router.route('/')
+    // GETLIST all players without parameters
+    .get(function(req, res, next) {
+        getList(req, res, next);
+    })
+    // POST a new player
+    .post(function(req, res, next) {
+        var newPlayerData = PlayerRepository.getNewPlayerData(req.body),
+            playerModel = mongoose.model('Player');
+
+        PlayerRepository.validateNewPlayerData(newPlayerData).then(function() {
+            // resolve callback
+            PlayerRepository.createPlayer(playerModel, newPlayerData).then(function(player) {
+                // resolve callback
+                res.json({
+                    player: player.sanitizeForOutput()
+                });
+            }, function(error) {
+                // error callback
+                Auxiliary.sendErrorResponse(res, error);
+            });
+        }, function(error) {
+            // error callback
+            Auxiliary.sendErrorResponse(res, error);
+        });
+    });
+
+//
+router.route('/limit/:limit(\\d+)?')
+    // GETLIST all players with offset parameter
+    .get(function(req, res, next) {
+        getList(req, res, next);
+    });
+
+router.route('/limit/:limit(\\d+)/offset/:offset(\\d+)?')
+    // GETLIST all players with offset AND limit parameter
+    .get(function(req, res, next) {
+        getList(req, res, next);
+    });
+
+router.route('/limit/:limit(\\d+)/offset/:offset/sort/:column(\\w+)/:direction(\\w+)')
+    // GETLIST all players with offset AND limit AND sort parameter
+    .get(function(req, res, next) {
+        getList(req, res, next);
+    });
+
+
 
 module.exports = router;

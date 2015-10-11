@@ -33,7 +33,7 @@ Response
 ---
 **GET /register** lists all players with default offset, default limit and default sorting
 
-**GET /register/limit/`<limit-value>`/offset/`<offset-value>`** lists all players with limit `<limit-value>`, default offset and default sorting
+**GET /register/limit/`<limit-value>`** lists all players with limit `<limit-value>`, default offset and default sorting
 
 **GET /register/limit/`<limit-value>`/offset/`<offset-value>`** lists all players with limit `<limit-value>`, offset `<offset-value>`, and default sorting
 

@@ -3,7 +3,8 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    PlayerRepository = require('../repository/player');
 
 var playerSchema = new mongoose.Schema({
     playerId: { type: Number, default: Date.now() },
@@ -45,10 +46,12 @@ playerSchema.virtual('passwordx').set(function (password) {
  * @returns {object}
  */
 playerSchema.methods.sanitizeForOutput = function sanitizeForOutput() {
-    var playerObj = (JSON.parse(JSON.stringify(this))); // "cloning" this
-    playerObj.created_at = undefined;
-    playerObj.__v = undefined;
-    playerObj._id = undefined;
+    var playerObj = (JSON.parse(JSON.stringify(this))), // "cloning" this
+        blacklist = PlayerRepository.getBlacklist(),
+        i;
+    for (i = 0; i < blacklist.length; i++) {
+        playerObj[blacklist[i]] = undefined;
+    }
     return playerObj;
 };
 

@@ -23,14 +23,16 @@ GameRepository = {
             }, function (err, game) {
                 if (!game) {
                     reject({
-                        text: 'game with id "' + gameId + '" does not exist'
+                        text: 'game with id "' + gameId + '" does not exist',
+                        key: 'game_0001'
                     });
                 }
                 else if (typeof username !== 'undefined') {
                     // check if passed username belongs to the game (if any username was passed)
                     if (game.player1 !== username && game.player2 !== username) {
                         reject({
-                            text: 'game does not belong to user ' + username
+                            text: 'game does not belong to user ' + username,
+                            key: 'game_0002'
                         });
                     }
                     else {

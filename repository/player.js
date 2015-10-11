@@ -4,7 +4,36 @@ var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
     PlayerRepository;
 
+/**
+ * model values which should NOT be delivered in responses
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @private
+ * @type {string[]}
+ */
+var blacklist = ['created_at', '__v', '_id'];
+
 PlayerRepository = {
+    /**
+     * returns the blacklist of the player model
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @returns {string[]}
+     */
+    getBlacklist: function() {
+        return blacklist;
+    },
+    /**
+     * creates a mongoose usable exclude string out of the blacklist and returns it
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @returns {string}
+     */
+    getBlacklistExcludeString: function() {
+        return '-' + blacklist.join(' -');
+    },
     /**
      * resolves with the player with the given playerId or rejects with an error if something went wrong
      *
@@ -279,6 +308,84 @@ PlayerRepository = {
                             resolve(player);
                         }
                     });
+                }
+            });
+        });
+    },
+    /**
+     * extracts offset, limit, sort-column and sort-directon from the given req object and returns it
+     * not found parameters will be supplemented by the default values
+     *
+     * @todo maybe move default values to some sort of application-configuration
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {object} req
+     * @returns {{limit: (*|number), offset: (*|number), column: (*|string), direction: (*|string)}}
+     */
+    getPlayerListData: function(req) {
+        return {
+            limit: req.limit || 5,
+            offset: req.offset || 0,
+            column: req.column || 'score',
+            direction: req.direction || 'desc',
+        };
+    },
+    /**
+     * takes the given sort parameters, checks them for validity and returns them as either a
+     * default sort object (if validation failed) or tranforms them to a mongoos query usable
+     * object and returns that
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @private
+     * @param column
+     * @param direction
+     * @returns {object}
+     */
+    getOrderbyObject: function(column, direction) {
+        var whitelistValue = ['score', 'created_at', 'name', 'username'],
+            whitelistOrder = ['asc', 'desc'],
+            sortObj = {};
+
+        if (whitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
+            whitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
+            return {
+                score: -1
+            };
+        }
+
+        sortObj[column] = direction.toLowerCase() === 'asc' ? 1 : -1;
+
+        return sortObj;
+    },
+    /**
+     * queries the player table with the given limit, offset and sort paramters and resolves with a
+     * sanitized array with player-objects or rejects with an error, if any
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {object} params
+     * @returns {bluebird|exports|module.exports}
+     */
+    getPlayers: function(params) {
+        var sortObj = this.getOrderbyObject(params.column, params.direction),
+            blacklistExclude = this.getBlacklistExcludeString();
+
+        return new Promise(function(resolve, reject) {
+
+            mongoose.model('Player').find({}, blacklistExclude, {
+                limit: params.limit,
+                skip: params.offset,
+                sort: sortObj
+            }, function (err, players) {
+                if (err) {
+                    reject({
+                        text: 'there was an error querying the database: ' + err,
+                        key: 'database_0001'
+                    });
+                }
+                else {
+                    resolve(players);
                 }
             });
         });

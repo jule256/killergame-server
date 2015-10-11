@@ -12,10 +12,10 @@
 | `player_update_0001`      | not all necessary data is set | - |
 | `player_update_0002`      | email address already exists in database | - |
 | ``      |  | - |
-| `player_0001`        | player with id <playerId> does not exist | - |
+| `player_0001`        | player with id `<playerId>` does not exist | - |
 | ``      |  | - |
-| ``      |  | - |
-| ``      |  | - |
+| `game_0001`      | game with id "`<gameId>`" does not exist | - |
+| `game_0002`      | game does not belong to user `<username>` | - |
 | ``      |  | - |
 | ``      |  | - |
 | ``      |  | - |

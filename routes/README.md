@@ -30,8 +30,38 @@ Response
 	    }
     }
 ```
-**GET /register** lists all players (not implemented yet)
-
+---
+**GET /register** lists all players with default offset, default limit and default sorting
+**GET /register/limit/`<limit-value>`/offset/`<offset-value>`** lists all players with limit `<limit-value>`, default offset and default sorting
+**GET /register/limit/`<limit-value>`/offset/`<offset-value>`** lists all players with limit `<limit-value>`, offset `<offset-value>`, and default sorting
+**GET /register/limit/`<limit-value>`/offset/`<offset-value>`/sort/`<sort-column>`/`<sort-direction>`** lists all players with limit `<limit-value>`, offset `<offset-value>` sorted by `<sort-column>` in direction `<sort-direction>`
+```
+Response
+    {
+        "players": [
+	        {
+	        	"playerId": <playerId> // the playerId is needed for all player related requests
+		        "password": "<the hashed secret password>",
+		        "name": "<name of the player>",
+		        "email": "<email-address of the player>",
+		        "username": "<username of the player>",
+		        "active": true,
+		        "score": <score of the player>
+	        },
+	        [...]
+	        {
+	        	"playerId": <playerId> // the playerId is needed for all player related requests
+		        "password": "<the hashed secret password>",
+		        "name": "<name of the player>",
+		        "email": "<email-address of the player>",
+		        "username": "<username of the player>",
+		        "active": true,
+		        "score": <score of the player>
+	        },
+	    ]
+    }
+```
+---
 **GET /register/`<playerId>`** returns data of the player with the id `<playerId>`
 ```
 Response
@@ -47,6 +77,7 @@ Response
 	    }
    }
 ```
+---
 **PUT /register/`<playerId>`** updates the data of the player with the given `<playerId>`
 ```
 Payload
@@ -75,6 +106,7 @@ Response
         // @todo maybe add "lastMoveData" to the response
     }
 ```
+---
 **DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(not implemented yet)
 ### Endpoint GAME
 **POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>`
@@ -102,8 +134,9 @@ Response
         }
     }
 ```
+---
 **GET /game** lists all games (not implemented yet)
-
+---
 **GET /game/`<gameId>`** returns data of the game with the id `<gameId>`
 ```
 Response
@@ -121,6 +154,7 @@ Response
         }
     }
 ```
+---
 **PUT /game/`<gameId>`** puts a piece at the coordinate `<x coordinate>`/`<y coordinate>` for the username `<theUsername>` in the game with the id `<gameId>`
 ```
 Payload
@@ -157,6 +191,7 @@ Payload
     "test-key": "<test-value>"
 }
 ```
+---
 **GET /dev** is a development route you can use to debug/test things
 
 

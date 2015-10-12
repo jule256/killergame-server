@@ -24,43 +24,27 @@ router.use(methodOverride(function(req, res) {
 
 // route middleware to validate :playerId and add it to the req-object
 router.param('playerId', function(req, res, next, playerId) {
-    // @todo playerId validation
     req.playerId = playerId;
     next();
 });
 
 router.param('offset', function(req, res, next, offset) {
     req.offset = offset;
-
-    console.log('setting offset', offset);
-
     next();
 });
 
 router.param('limit', function(req, res, next, limit) {
-
-    console.log('param limit is ', limit);
-
     req.limit = limit;
-
-    console.log('setting limit', limit);
-
     next();
 });
 
 router.param('column', function(req, res, next, column) {
     req.column = column;
-
-    console.log('setting column', column);
-
     next();
 });
 
 router.param('direction', function(req, res, next, direction) {
     req.direction = direction;
-
-    console.log('setting direction', direction);
-
     next();
 });
 
@@ -122,28 +106,17 @@ router.route('/:playerId(\\d+)') // (\\d+) ensures to trigger only on numbers
  */
 getList = function(req, res, next) {
     var params = PlayerRepository.getPlayerListData(req);
-
-    console.log('getList(), params:', params);
-
     PlayerRepository.getPlayers(params).then(function(players) {
         // resolve callback
-
-        console.log('resolve');
-
         res.format({
             json: function() {
                 res.json({
-                    text: 'GETLIST /register',
-                    params: params,
                     players: players
                 });
             }
         });
     }, function(error) {
         // error callback
-
-        console.log('reject');
-
         Auxiliary.sendErrorResponse(res, error);
     });
 };

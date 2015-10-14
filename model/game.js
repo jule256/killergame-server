@@ -15,7 +15,8 @@ var gameSchema = new mongoose.Schema({
     created_at: { type: Date, default: Date.now },
     player1: String, // username of player 1
     player2: String, // username of player 2
-    setCoord: { type: Array, default: [] } // where the winning set is stored
+    setCoord: { type: Array, default: [] }, // where the winning set is stored
+    moveCount: { type: Number, default: 0 }, // contains the number of completed moves (needed for "draw-detection")
 });
 
 /**
@@ -47,7 +48,9 @@ gameSchema.methods.makeMove = function makeMove(moveData) {
     fieldObj[moveData.x][moveData.y] = this.getPiece();
     this.field = JSON.stringify(fieldObj);
 
-    // @todo think of best place to change from "prestart" to "inprogress", here it is set while every move
+    this.moveCount++; // increase number of moves
+
+    // @todo think of best place to change from "prestart" to "inprogress", here it is set during every move
     this.status = 'inprogress'; // magic strings?
 };
 
@@ -74,9 +77,10 @@ gameSchema.methods.changeActivePlayer = function changeActivePlayer() {
 
 /**
  * checks if the given moveData is valid for the current state of this game
- * if a validation error occurs, this game's error value is set (even tho this.error is NOT part of the Schema and will
- * therefore not be permanently stored to database), the error value can be fetched with this.getValidateMoveDataError()
- * if no validation error occurs, this game's error value will be reset to ''
+ * if a validation error occurs, this game's error value is set (even tho this.errorText and this.errorKey are NOT part
+ * of the Schema and will therefore not be permanently stored to database), the error value object can be fetched with
+ * this.getValidateMoveDataError()
+ * if no validation error occurs, this game's errorText and errorKey values will be reset to ''
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @public
@@ -86,23 +90,28 @@ gameSchema.methods.changeActivePlayer = function changeActivePlayer() {
 gameSchema.methods.validateMoveData = function validateMoveData(moveData) {
 
     if (this.status === 'finished') {
-        this.error = 'this game is already over';
+        this.errorText = 'this game is already over';
+        this.errorKey = 'game_0003';
         return false;
     }
     if (!this.validateMoveDataPlayer(moveData.username)) {
-        this.error = 'it is not your turn';
+        this.errorText = 'it is not your turn';
+        this.errorKey = 'game_0004';
         return false;
     }
     if (!this.validateMoveDataInsideBounds(moveData.x, moveData.y)) {
-        this.error = 'coordinates are not within bounds';
+        this.errorText = 'coordinates are not within bounds';
+        this.errorKey = 'game_0005';
         return false;
     }
     if (!this.validateMoveDataSlotAvailable(moveData.x, moveData.y)) {
-        this.error = 'slot ' + moveData.x + '/' + moveData.y + ' cannot be used';
+        this.errorText = 'slot ' + moveData.x + '/' + moveData.y + ' cannot be used';
+        this.errorKey = 'game_0006';
         return false;
     }
 
-    this.error = '';
+    this.errorText = '';
+    this.errorKey = '';
     return true;
 };
 
@@ -148,16 +157,18 @@ gameSchema.methods.validateMoveDataSlotAvailable = function validateMoveDataSlot
 };
 
 /**
- * returns the current (validation)error as string
- *
- * @todo maybe return 2 values, a string and a numeric error-identifier
+ * returns the current (validation)error as object with keys "text" and "key"
+ * usable for Auxiliary.sendErrorResponse()
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @public
- * @returns {string}
+ * @returns {object}
  */
 gameSchema.methods.getValidateMoveDataError = function getMoveDataError() {
-    return this.error;
+    return {
+        text: this.errorText,
+        key: this.errorKey
+    };
 };
 
 /**
@@ -318,7 +329,8 @@ gameSchema.methods.checkForWinDirection2 =
 };
 
 /**
- * finishes this game (but only if the game is not already finished)
+ * finishes this game (but only if the game is not already finished) and sets the winning set's coordinates
+ * (but only if a setCoord object is passed)
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @private
@@ -326,8 +338,25 @@ gameSchema.methods.checkForWinDirection2 =
 gameSchema.methods.finishGame = function finishGame(setCoord) {
     if (this.status !== 'finished') {
         this.status = 'finished'; // magic strings?
-        this.setCoord = setCoord; // store the winning set of coordinates
+        if (typeof setCoord !== 'undefined') {
+            this.setCoord = setCoord; // store the winning set of coordinates
+        }
     }
+};
+
+/**
+ * returns true if the number of moves is equal the number of slots on the field, otherwise false
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @public
+ * @returns {boolean}
+ */
+gameSchema.methods.checkForDraw = function checkForDraw() {
+    if (+this.moveCount === +(this.fieldHeight * this.fieldWidth)) {
+        this.finishGame();
+        return true;
+    }
+    return false;
 };
 
 /**

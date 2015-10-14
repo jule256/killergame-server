@@ -141,6 +141,7 @@ Response
 ```
 ---
 **GET /game** lists all games (not implemented yet)
+
 ---
 **GET /game/`<gameId>`** returns data of the game with the id `<gameId>`
 ```

@@ -47,7 +47,10 @@ GameRepository = {
     },
 
     /**
-     * extracts the player1 and player2 value from the given reqBody object
+     * extracts the player1 and player2 value from the given reqBody object and returns an
+     * object usable for creating a game
+     * if reqBody contains fieldWidth or fieldHeight, the according values will be extracted
+     * and added to the return object
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
@@ -57,7 +60,9 @@ GameRepository = {
     getNewGameData: function(reqBody) {
         return {
             player1: reqBody.player1,
-            player2: reqBody.player2
+            player2: reqBody.player2,
+            fieldWidth: reqBody.fieldWidth || undefined,
+            fieldHeight: reqBody.fieldHeight || undefined
         };
     },
 

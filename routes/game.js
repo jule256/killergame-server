@@ -6,7 +6,9 @@ var express = require('express'),
     bodyParser = require('body-parser'), // parses information from POST
     methodOverride = require('method-override'), // used to manipulate POST
     GameRepository = require('../repository/game'),
-    Auxiliary = require('../app/auxiliary');
+    PlayerRepository = require('../repository/player'),
+    Auxiliary = require('../app/auxiliary'),
+    saveGame;
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(methodOverride(function(req, res) {
@@ -23,12 +25,42 @@ router.use(methodOverride(function(req, res) {
 
 // route middleware to validate :gameId and add it to the req-object
 router.param('gameId', function(req, res, next, gameId) {
-    // @todo gameId validation
+    // @todo gameId validation?
     req.gameId = gameId;
     next();
 });
 
 // actual routes ------
+
+/**
+ * handles saving of the given game to prevent duplicated code in the PUT :gameId request
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @private
+ * @param {mongoose.model} game
+ * @param {object} moveData
+ * @param {object} res
+ */
+saveGame = function(game, moveData, res) {
+    // for debugging/testing (check server's console output!)
+    game.printField();
+
+    // saving the game to database
+    game.save(function (err) {
+        if (err) {
+            Auxiliary.sendErrorResponse(res, err.toString());
+            return;
+        }
+        res.format({
+            json: function() {
+                res.json({
+                    game: game.sanitizeForOutput(),
+                    moveData: moveData
+                });
+            }
+        });
+    });
+};
 
 router.route('/')
     // GET ALL returns ...
@@ -78,53 +110,92 @@ router.route('/:gameId')
     })
     // PUT to set a game piece
     .put(function(req, res) {
-        var moveData = GameRepository.getMoveData(req.body, req.gameId);
+        var moveData = GameRepository.getMoveData(req.body, req.gameId),
+            errorData;
         GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
             // resolve callback
 
             // validation of move data
             if (!game.validateMoveData(moveData)) {
-                Auxiliary.sendErrorResponse(res, {
-                    text: game.getValidateMoveDataError()
-                });
+                errorData = game.getValidateMoveDataError();
+                Auxiliary.sendErrorResponse(res, errorData);
                 return;
             }
 
             // making the move
             game.makeMove(moveData);
 
-            // @todo check for draw
-
             if (game.checkForWin(moveData)) {
-                console.log('this is a win');
+                // this game is won by the active player
 
-                // @todo handle win
-                // @todo increase player's score
+                PlayerRepository.getPlayerByUsername(moveData.username).then(function(player) {
+                    // resolve callback
+                    player.increaseScore();
+
+                    player.save(function (err) {
+                        if (err) {
+                            Auxiliary.sendErrorResponse(res, err.toString());
+                            return;
+                        }
+                        // continue code-flow at saveGame()
+                        saveGame(game, moveData, res);
+                        return;
+                    });
+                }, function(error) {
+                    // error callback
+                    Auxiliary.sendErrorResponse(res, error);
+                    return;
+                });
+            }
+            else if (game.checkForDraw()) {
+                // this game ended draw
+
+                // get player 1 and increase his score
+                PlayerRepository.getPlayerByUsername(game.player1).then(function(player1) {
+                    // resolve callback
+                    player1.increaseScore(1); // @todo get "1" from some sort of application-configuration?
+
+                    player1.save(function (err) {
+                        if (err) {
+                            Auxiliary.sendErrorResponse(res, err.toString());
+                            return;
+                        }
+
+                        // get player 2 and increase his score
+                        PlayerRepository.getPlayerByUsername(game.player2).then(function(player2) {
+                            // resolve callback
+                            player2.increaseScore(1); // @todo get "1" from some sort of application-configuration?
+
+                            player2.save(function (err) {
+                                if (err) {
+                                    Auxiliary.sendErrorResponse(res, err.toString());
+                                    return;
+                                }
+                                // continue code-flow at saveGame()
+                                saveGame(game, moveData, res);
+                                return;
+                            });
+                        }, function(error) {
+                            // error callback
+                            Auxiliary.sendErrorResponse(res, error);
+                            return;
+                        });
+                    });
+                }, function(error) {
+                    // error callback
+                    Auxiliary.sendErrorResponse(res, error);
+                    return;
+                });
             }
             else {
                 // game is not over yet, change to other player
+
                 game.changeActivePlayer();
+
+                // continue code-flow at saveGame()
+                saveGame(game, moveData, res);
+                return;
             }
-
-            // for debugging/testing (check server's console output!)
-            game.printField();
-
-            // saving the game to database
-            game.save(function (err) {
-                if (err) {
-                    Auxiliary.sendErrorResponse(res, err.toString());
-                    return;
-                }
-                res.format({
-                    json: function() {
-                        res.json({
-                            route: 'PUT /game',
-                            game: game.sanitizeForOutput(),
-                            moveData: moveData
-                        });
-                    }
-                });
-            });
         }, function(error) {
             // error callback
             Auxiliary.sendErrorResponse(res, error);

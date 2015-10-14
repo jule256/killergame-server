@@ -40,6 +40,21 @@ playerSchema.virtual('passwordx').set(function (password) {
 });
 
 /**
+ * adds the given delta value to the current score of this player
+ * if no delta is passed, the default value of +3 will be used
+ *
+ * @todo maybe move default value to some sort of application-configuration
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @public
+ * @param {Number} delta
+ */
+playerSchema.methods.increaseScore = function increaseScore(delta) {
+    delta = delta || 3;
+    this.score += +delta;
+};
+
+/**
  * creates a clone of this player and removes all "unnecessary" key-value-pairs before returning it
  *
  * @author Julian Mollik <jule@creative-coding.net>

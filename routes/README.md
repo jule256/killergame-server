@@ -112,14 +112,16 @@ Response
 ---
 **DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(not implemented yet)
 ### Endpoint GAME
-**POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>`
+**POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>` with the dimensions of `<fieldWidth>` &times; `<fieldHeight>` (optional)
 ```
 Payload
 {
     "player1": "<usernamePlayer1>",
-    "player2": "<usernamePlayer2>"
+    "player2": "<usernamePlayer2>",
+    "fieldWidth": <custom-width-of-the-field>, // Number (default is 10)
+    "fieldHeight": <custom-height-of-the-field> // Number (default is 10)
 }
-Example {"player1": "spieler 1", "player2": "spieler 2"}
+Example {"player1": "spieler 1", "player2": "spieler 2", "fieldWidth": 10, "fieldHeight": 10}
 ```
 ```
 Response

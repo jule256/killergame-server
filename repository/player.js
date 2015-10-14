@@ -24,6 +24,7 @@ PlayerRepository = {
     getBlacklist: function() {
         return blacklist;
     },
+
     /**
      * creates a mongoose usable exclude string out of the blacklist and returns it
      *
@@ -34,12 +35,13 @@ PlayerRepository = {
     getBlacklistExcludeString: function() {
         return '-' + blacklist.join(' -');
     },
+
     /**
      * resolves with the player with the given playerId or rejects with an error if something went wrong
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
-     * @param {number} playerId
+     * @param {Number} playerId
      * @returns {bluebird|exports|module.exports}
      */
     getPlayer: function (playerId) {
@@ -57,6 +59,31 @@ PlayerRepository = {
             });
         });
     },
+
+    /**
+     * resolves with the player with the given username or rejects with an error if something went wrong
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {String} username
+     * @returns {bluebird|exports|module.exports}
+     */
+    getPlayerByUsername: function (username) {
+        return new Promise(function (resolve, reject) {
+            mongoose.model('Player').findOne({ username: username }, function (err, player) {
+                if (!player) {
+                    reject({
+                        text: 'player with username "' + username + '" does not exist',
+                        key: 'player_0002'
+                    });
+                }
+                else {
+                    resolve(player);
+                }
+            });
+        });
+    },
+
     /**
      * extracts the player-data from reqBody object and returns it (used for new players)
      *
@@ -74,6 +101,7 @@ PlayerRepository = {
             password_2: reqBody.password_2
         };
     },
+
     /**
      * extracts the player-data from reqBody object and returns it (used for existing players)
      *
@@ -92,6 +120,7 @@ PlayerRepository = {
             playerId: playerId
         };
     },
+
     /**
      * resolves if the given playerData is valid and otherwise rejects with an error (used for new players)
      *
@@ -148,6 +177,7 @@ PlayerRepository = {
             });
         });
     },
+
     /**
      * resolves if the given playerData is valid and otherwise rejects with an error (used for existing players)
      *
@@ -225,6 +255,7 @@ PlayerRepository = {
             });
         });
     },
+
     /**
      * resolves if creating a new player with the given playerData was successful and otherwise rejects with an error
      *
@@ -263,6 +294,7 @@ PlayerRepository = {
             });
         });
     },
+
     /**
      * resolves if updating the player with the given playerData was successful and otherwise rejects with an error
      *
@@ -312,6 +344,7 @@ PlayerRepository = {
             });
         });
     },
+
     /**
      * extracts offset, limit, sort-column and sort-directon from the given req object and returns it
      * not found parameters will be supplemented by the default values
@@ -331,10 +364,13 @@ PlayerRepository = {
             direction: req.direction || 'desc',
         };
     },
+
     /**
      * takes the given sort parameters, checks them for validity and returns them as either a
      * default sort object (if validation failed) or tranforms them to a mongoos query usable
      * object and returns that
+     *
+     * @todo maybe move whitelist-values to some sort of application-configuration
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @private
@@ -358,6 +394,7 @@ PlayerRepository = {
 
         return sortObj;
     },
+
     /**
      * queries the player table with the given limit, offset and sort paramters and resolves with a
      * sanitized array with player-objects or rejects with an error, if any
@@ -380,7 +417,7 @@ PlayerRepository = {
             }, function (err, players) {
                 if (err) {
                     reject({
-                        text: 'there was an error querying the database: ' + err,
+                        text: 'there was an error querying the database',
                         key: 'database_0001'
                     });
                 }
@@ -389,7 +426,9 @@ PlayerRepository = {
                 }
             });
         });
-    }
+    },
+
+
 };
 
 module.exports = PlayerRepository;

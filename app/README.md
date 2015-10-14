@@ -9,13 +9,18 @@
 | `player_register_0002`      | passwords do not match            | - |
 | `player_register_0003`      | player already exists in database | - |
 | ``      |  | - |
-| `player_update_0001`      | not all necessary data is set | - |
+| `player_update_0001`      | not all necessary data is set            | - |
 | `player_update_0002`      | email address already exists in database | - |
 | ``      |  | - |
 | `player_0001`        | player with id `<playerId>` does not exist | - |
+| `player_0002`        | player with id `<username>` does not exist | - |
 | ``      |  | - |
-| `game_0001`      | game with id "`<gameId>`" does not exist | - |
-| `game_0002`      | game does not belong to user `<username>` | - |
+| `game_0001`      | game with id "`<gameId>`" does not exist          | - |
+| `game_0002`      | game does not belong to user `<username>`         | - |
+| `game_0003`      | this game is already over                         | - |
+| `game_0004`      | it is not your turn                               | - |
+| `game_0005`      | coordinates are not within bounds                 | - |
+| `game_0006`      | slot `<moveData.x>`/`<moveData.y>` cannot be used | - |
 | ``      |  | - |
 | ``      |  | - |
 | ``      |  | - |

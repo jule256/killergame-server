@@ -2,6 +2,8 @@
 
 var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
+    md5 = require('md5'),
+    config = require('../config/config'),
     PlayerRepository;
 
 /**
@@ -39,12 +41,14 @@ PlayerRepository = {
     /**
      * resolves with the player with the given playerId or rejects with an error if something went wrong
      *
+     * @todo maybe merge all getPlayerBy*() functions
+     *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {Number} playerId
      * @returns {bluebird|exports|module.exports}
      */
-    getPlayer: function (playerId) {
+    getPlayerByPlayerId: function(playerId) {
         return new Promise(function (resolve, reject) {
             mongoose.model('Player').findOne({ playerId: playerId }, function (err, player) {
                 if (!player) {
@@ -63,12 +67,14 @@ PlayerRepository = {
     /**
      * resolves with the player with the given username or rejects with an error if something went wrong
      *
+     * @todo maybe merge all getPlayerBy*() functions
+     *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {String} username
      * @returns {bluebird|exports|module.exports}
      */
-    getPlayerByUsername: function (username) {
+    getPlayerByUsername: function(username) {
         return new Promise(function (resolve, reject) {
             mongoose.model('Player').findOne({ username: username }, function (err, player) {
                 if (!player) {
@@ -76,6 +82,34 @@ PlayerRepository = {
                         text: 'player with username "' + username + '" does not exist',
                         key: 'player_0002'
                     });
+                }
+                else {
+                    resolve(player);
+                }
+            });
+        });
+    },
+
+    /**
+     * resolves with the player with the given username/password or rejects
+     *
+     * @todo maybe merge all getPlayerBy*() functions
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param username
+     * @param password
+     * @returns {bluebird|exports|module.exports}
+     */
+    getPlayerByUsernameAndPassword: function(username, password) {
+        var passwordx = md5(password + config.passwordHash);
+        return new Promise(function (resolve, reject) {
+            mongoose.model('Player').findOne({
+                username: username ,
+                password: passwordx
+            }, function (err, player) {
+                if (!player) {
+                    reject();
                 }
                 else {
                     resolve(player);
@@ -118,6 +152,21 @@ PlayerRepository = {
             password_1: reqBody.password_1,
             password_2: reqBody.password_2,
             playerId: playerId
+        };
+    },
+
+    /**
+     * extracts username and password from the given req-object and returns it (used for login)
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {object} reqBody
+     * @returns {{username: {String}, password: {String}}}
+     */
+    getLoginPlayerData: function(reqBody) {
+        return {
+            username: reqBody.username,
+            password: reqBody.password
         };
     },
 
@@ -347,9 +396,7 @@ PlayerRepository = {
 
     /**
      * extracts offset, limit, sort-column and sort-directon from the given req object and returns it
-     * not found parameters will be supplemented by the default values
-     *
-     * @todo maybe move default values to some sort of application-configuration
+     * not found parameters will be supplemented by the default values from the config
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
@@ -358,10 +405,10 @@ PlayerRepository = {
      */
     getPlayerListData: function(req) {
         return {
-            limit: req.limit || 5,
-            offset: req.offset || 0,
-            column: req.column || 'score',
-            direction: req.direction || 'desc',
+            limit: req.limit || config.playerListLimit,
+            offset: req.offset || config.playerListOffset,
+            column: req.column || config.playerListColumn,
+            direction: req.direction || config.playerListDirection
         };
     },
 
@@ -370,8 +417,6 @@ PlayerRepository = {
      * default sort object (if validation failed) or tranforms them to a mongoos query usable
      * object and returns that
      *
-     * @todo maybe move whitelist-values to some sort of application-configuration
-     *
      * @author Julian Mollik <jule@creative-coding.net>
      * @private
      * @param column
@@ -379,12 +424,10 @@ PlayerRepository = {
      * @returns {object}
      */
     getOrderbyObject: function(column, direction) {
-        var whitelistValue = ['score', 'created_at', 'name', 'username'],
-            whitelistOrder = ['asc', 'desc'],
-            sortObj = {};
+        var sortObj = {};
 
-        if (whitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
-            whitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
+        if (config.playerListWhitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
+            config.playerListWhitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
             return {
                 score: -1
             };
@@ -426,9 +469,7 @@ PlayerRepository = {
                 }
             });
         });
-    },
-
-
+    }
 };
 
 module.exports = PlayerRepository;

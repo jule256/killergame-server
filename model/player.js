@@ -4,6 +4,8 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+    Md5 = require('md5'),
+    config = require('../config/config'),
     PlayerRepository = require('../repository/player');
 
 var playerSchema = new mongoose.Schema({
@@ -30,27 +32,23 @@ playerSchema.methods.initialize = function initialize(password) {
 /**
  * hashes the given password and sets the passwordx value of this player
  *
- * @todo actually hash the password ;-)
- *
  * @author Julian Mollik <jule@creative-coding.net>
  * @private
  */
 playerSchema.virtual('passwordx').set(function (password) {
-    this.password = 'md5(' + password + ')';
+    this.password = Md5(password + config.passwordHash);
 });
 
 /**
  * adds the given delta value to the current score of this player
- * if no delta is passed, the default value of +3 will be used
- *
- * @todo maybe move default value to some sort of application-configuration
+ * if no delta is passed, the default value from the config will be used
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @public
- * @param {Number} delta
+ * @param {Number} [delta]
  */
 playerSchema.methods.increaseScore = function increaseScore(delta) {
-    delta = delta || 3;
+    delta = delta || config.scoreIncreaseWin;
     this.score += +delta;
 };
 

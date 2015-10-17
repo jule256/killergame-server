@@ -1,9 +1,8 @@
 'use strict';
 
-var mongoose = require('mongoose'), // mongo connection
-    Auxiliary;
+var ErrorHelper;
 
-Auxiliary = {
+ErrorHelper = {
     /**
      * adds an error to the given res object and sets the response
      * errorObj: {
@@ -33,13 +32,4 @@ Auxiliary = {
     }
 };
 
-module.exports = Auxiliary;
-
-
-
-
-
-
-
-
-
+module.exports = ErrorHelper;

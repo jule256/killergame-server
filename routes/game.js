@@ -7,7 +7,9 @@ var express = require('express'),
     methodOverride = require('method-override'), // used to manipulate POST
     GameRepository = require('../repository/game'),
     PlayerRepository = require('../repository/player'),
-    Auxiliary = require('../app/auxiliary'),
+    ErrorHelper = require('../helper/error'),
+    AuthHelper = require('../helper/auth'),
+    config = require('../config/config'),
     saveGame;
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -20,6 +22,11 @@ router.use(methodOverride(function(req, res) {
         return method;
     }
 }));
+
+// @todo check if the token-verified-player is valid for the game
+
+// AuthHelper middleware takes care of token verification ------
+router.use(AuthHelper.verifyToken);
 
 // accumulating parameters ------
 
@@ -48,7 +55,7 @@ saveGame = function(game, moveData, res) {
     // saving the game to database
     game.save(function (err) {
         if (err) {
-            Auxiliary.sendErrorResponse(res, err.toString());
+            ErrorHelper.sendErrorResponse(res, err.toString());
             return;
         }
         res.format({
@@ -65,11 +72,11 @@ saveGame = function(game, moveData, res) {
 router.route('/')
     // GET ALL returns ...
     .get(function(req, res, next) {
-
         // @todo implement
-
-        Auxiliary.sendErrorResponse(res, {
-            text: 'GETLIST /game is not implemented yet'
+        ErrorHelper.sendErrorResponse(res, {
+            code: 404,
+            text: 'GETLIST /game is not implemented yet',
+            key: 'todo_0001'
         });
     })
     // POST create a new game
@@ -86,11 +93,11 @@ router.route('/')
                 });
             }, function(error) {
                 // error callback
-                Auxiliary.sendErrorResponse(res, error);
+                ErrorHelper.sendErrorResponse(res, error);
             });
         }, function(error) {
             // error callback
-            Auxiliary.sendErrorResponse(res, error);
+            ErrorHelper.sendErrorResponse(res, error);
         });
     });
 
@@ -105,7 +112,7 @@ router.route('/:gameId')
             });
         }, function(error) {
             // error callback
-            Auxiliary.sendErrorResponse(res, error);
+            ErrorHelper.sendErrorResponse(res, error);
         });
     })
     // PUT to set a game piece
@@ -118,7 +125,7 @@ router.route('/:gameId')
             // validation of move data
             if (!game.validateMoveData(moveData)) {
                 errorData = game.getValidateMoveDataError();
-                Auxiliary.sendErrorResponse(res, errorData);
+                ErrorHelper.sendErrorResponse(res, errorData);
                 return;
             }
 
@@ -134,7 +141,7 @@ router.route('/:gameId')
 
                     player.save(function (err) {
                         if (err) {
-                            Auxiliary.sendErrorResponse(res, err.toString());
+                            ErrorHelper.sendErrorResponse(res, err.toString());
                             return;
                         }
                         // continue code-flow at saveGame()
@@ -142,7 +149,7 @@ router.route('/:gameId')
                     });
                 }, function(error) {
                     // error callback
-                    Auxiliary.sendErrorResponse(res, error);
+                    ErrorHelper.sendErrorResponse(res, error);
                 });
             }
             else if (game.checkForDraw()) {
@@ -151,22 +158,22 @@ router.route('/:gameId')
                 // get player 1 and increase his score
                 PlayerRepository.getPlayerByUsername(game.player1).then(function(player1) {
                     // resolve callback
-                    player1.increaseScore(1); // @todo get "1" from some sort of application-configuration?
+                    player1.increaseScore(config.scoreIncreaseDraw);
 
                     player1.save(function (err) {
                         if (err) {
-                            Auxiliary.sendErrorResponse(res, err.toString());
+                            ErrorHelper.sendErrorResponse(res, err.toString());
                             return;
                         }
 
                         // get player 2 and increase his score
                         PlayerRepository.getPlayerByUsername(game.player2).then(function(player2) {
                             // resolve callback
-                            player2.increaseScore(1); // @todo get "1" from some sort of application-configuration?
+                            player2.increaseScore(config.scoreIncreaseDraw);
 
                             player2.save(function (err) {
                                 if (err) {
-                                    Auxiliary.sendErrorResponse(res, err.toString());
+                                    ErrorHelper.sendErrorResponse(res, err.toString());
                                     return;
                                 }
                                 // continue code-flow at saveGame()
@@ -174,12 +181,12 @@ router.route('/:gameId')
                             });
                         }, function(error) {
                             // error callback
-                            Auxiliary.sendErrorResponse(res, error);
+                            ErrorHelper.sendErrorResponse(res, error);
                         });
                     });
                 }, function(error) {
                     // error callback
-                    Auxiliary.sendErrorResponse(res, error);
+                    ErrorHelper.sendErrorResponse(res, error);
                 });
             }
             else {
@@ -192,12 +199,14 @@ router.route('/:gameId')
             }
         }, function(error) {
             // error callback
-            Auxiliary.sendErrorResponse(res, error);
+            ErrorHelper.sendErrorResponse(res, error);
         });
     })
-    .delete(function (req, res){
-        Auxiliary.sendErrorResponse(res, {
-            text: 'DELETE /game is not implemented yet'
+    .delete(function (req, res) {
+        ErrorHelper.sendErrorResponse(res, {
+            code: 404,
+            text: 'DELETE /game is not implemented yet',
+            key: 'todo_0002'
         });
     });
 

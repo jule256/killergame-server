@@ -5,20 +5,18 @@ var express = require('express'),
     favicon = require('serve-favicon'),
     logger = require('morgan'),
     cookieParser = require('cookie-parser'),
-    bodyParser = require('body-parser');
+    bodyParser = require('body-parser'),
+    morgan = require('morgan'); // for better logging
 
-var db = require('./model/db'),
-    blob = require('./model/blobs'),
+var db = require('./model/db'), // sets up database connection
     playerModel = require('./model/player'),
     gameModel = require('./model/game');
 
 var routes = require('./routes/index'),
-    blobs = require('./routes/blobs'),
     register = require('./routes/register'),
     game = require('./routes/game'),
+    login = require('./routes/login'),
     dev = require('./routes/dev');
-
-//var users = require('./routes/users');
 
 var app = express();
 
@@ -35,11 +33,10 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-//app.use('/blobs', blobs);
 app.use('/register', register);
 app.use('/game', game);
+app.use('/login', login);
 app.use('/dev', dev);
-//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -75,5 +72,8 @@ app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     console.log('error:', err.message);
 });
+
+// for better logging
+// app.use(morgan('dev'));
 
 module.exports = app;

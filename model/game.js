@@ -158,7 +158,7 @@ gameSchema.methods.validateMoveDataSlotAvailable = function validateMoveDataSlot
 
 /**
  * returns the current (validation)error as object with keys "text" and "key"
- * usable for Auxiliary.sendErrorResponse()
+ * usable for ErrorHelper.sendErrorResponse()
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @public

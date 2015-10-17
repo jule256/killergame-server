@@ -23,8 +23,6 @@ router.use(methodOverride(function(req, res) {
     }
 }));
 
-// @todo check if the token-verified-player is valid for the game
-
 // AuthHelper middleware takes care of token verification ------
 router.use(AuthHelper.verifyToken);
 
@@ -84,6 +82,15 @@ router.route('/')
         var newGameData = GameRepository.getNewGameData(req.body),
             gameModel = mongoose.model('Game');
 
+        if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ newGameData.player1, newGameData.player2 ])) {
+            ErrorHelper.sendErrorResponse(res, {
+                code: 403,
+                text: 'cannot create game for other players',
+                key: 'game_0010'
+            });
+            return;
+        }
+
         GameRepository.validateNewGameData(newGameData).then(function() {
             // resolve callback
             GameRepository.createGame(gameModel, newGameData).then(function(game) {
@@ -107,9 +114,18 @@ router.route('/:gameId')
         var gameId = req.gameId;
         GameRepository.getGame(gameId, 'finished').then(function(game) {
             // resolve callback
-            res.json({
-                game: game.sanitizeForOutput()
-            });
+            if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ game.player1, game.player2 ])) {
+                ErrorHelper.sendErrorResponse(res, {
+                    code: 403,
+                    text: 'cannot retrieve game of other players',
+                    key: 'game_0011'
+                });
+            }
+            else {
+                res.json({
+                    game: game.sanitizeForOutput()
+                });
+            }
         }, function(error) {
             // error callback
             ErrorHelper.sendErrorResponse(res, error);
@@ -119,6 +135,16 @@ router.route('/:gameId')
     .put(function(req, res) {
         var moveData = GameRepository.getMoveData(req.body, req.gameId),
             errorData;
+
+        if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ moveData.username ])) {
+            ErrorHelper.sendErrorResponse(res, {
+                code: 403,
+                text: 'cannot make move for game of other players',
+                key: 'game_0012'
+            });
+            return;
+        }
+
         GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
             // resolve callback
 
@@ -211,6 +237,3 @@ router.route('/:gameId')
     });
 
 module.exports = router;
-
-
-

@@ -2,11 +2,12 @@
 
 var express = require('express'),
     router = express.Router(),
-    mongoose = require('mongoose'), //mongo connection
-    bodyParser = require('body-parser'), //parses information from POST
-    methodOverride = require('method-override'), //used to manipulate POST
+    mongoose = require('mongoose'), // mongo connection
+    bodyParser = require('body-parser'), // parses information from POST
+    methodOverride = require('method-override'), // used to manipulate POST
     PlayerRepository = require('../repository/player'),
-    Auxiliary = require('../app/auxiliary'),
+    ErrorHelper = require('../helper/error'),
+    AuthHelper = require('../helper/auth'),
     getList;
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -54,41 +55,14 @@ router.route('/:playerId(\\d+)') // (\\d+) ensures to trigger only on numbers
     // GET returns the player with the given id
     .get(function(req, res, next) {
         var playerId = req.playerId;
-        PlayerRepository.getPlayer(playerId).then(function(player) {
+        PlayerRepository.getPlayerByPlayerId(playerId).then(function(player) {
             // resolve callback
             res.json({
                 player: player.sanitizeForOutput()
             });
         }, function(error) {
             // error callback
-            Auxiliary.sendErrorResponse(res, error);
-        });
-    })
-    // PUT to update a player
-    .put(function(req, res) {
-        var playerData = PlayerRepository.getPlayerData(req.body, req.playerId),
-            playerModel = mongoose.model('Player');
-
-        PlayerRepository.validatePlayerData(playerData).then(function() {
-            // resolve callback
-            PlayerRepository.updatePlayer(playerModel, playerData).then(function(player) {
-                // resolve callback
-                res.json({
-                    player: player.sanitizeForOutput()
-                });
-            }, function(error) {
-                // error callback
-                Auxiliary.sendErrorResponse(res, error);
-            });
-        }, function(error) {
-            // error callback
-            Auxiliary.sendErrorResponse(res, error);
-        });
-    })
-    // DELETE to remove a player
-    .delete(function (req, res){
-        Auxiliary.sendErrorResponse(res, {
-            text: 'DELETE /player is not implemented yet'
+            ErrorHelper.sendErrorResponse(res, error);
         });
     });
 
@@ -117,7 +91,7 @@ getList = function(req, res, next) {
         });
     }, function(error) {
         // error callback
-        Auxiliary.sendErrorResponse(res, error);
+        ErrorHelper.sendErrorResponse(res, error);
     });
 };
 
@@ -136,15 +110,16 @@ router.route('/')
             PlayerRepository.createPlayer(playerModel, newPlayerData).then(function(player) {
                 // resolve callback
                 res.json({
-                    player: player.sanitizeForOutput()
+                    player: player.sanitizeForOutput(),
+                    token: AuthHelper.createToken(newPlayerData.username, newPlayerData.password_1)
                 });
             }, function(error) {
                 // error callback
-                Auxiliary.sendErrorResponse(res, error);
+                ErrorHelper.sendErrorResponse(res, error);
             });
         }, function(error) {
             // error callback
-            Auxiliary.sendErrorResponse(res, error);
+            ErrorHelper.sendErrorResponse(res, error);
         });
     });
 
@@ -167,6 +142,41 @@ router.route('/limit/:limit(\\d+)/offset/:offset/sort/:column(\\w+)/:direction(\
         getList(req, res, next);
     });
 
+// AuthHelper middleware takes care of token verification ------
+router.use(AuthHelper.verifyToken);
+
+// @todo return new token
+
+router.route('/:playerId(\\d+)') // (\\d+) ensures to trigger only on numbers
+    // PUT to update a player
+    .put(function(req, res) {
+        var playerData = PlayerRepository.getPlayerData(req.body, req.playerId),
+            playerModel = mongoose.model('Player');
+
+        PlayerRepository.validatePlayerData(playerData).then(function() {
+            // resolve callback
+            PlayerRepository.updatePlayer(playerModel, playerData).then(function(player) {
+                // resolve callback
+                res.json({
+                    player: player.sanitizeForOutput()
+                });
+            }, function(error) {
+                // error callback
+                ErrorHelper.sendErrorResponse(res, error);
+            });
+        }, function(error) {
+            // error callback
+            ErrorHelper.sendErrorResponse(res, error);
+        });
+    })
+    // DELETE to remove a player
+    .delete(function (req, res){
+        ErrorHelper.sendErrorResponse(res, {
+            code: 404,
+            text: 'DELETE /player is not implemented yet',
+            key: 'todo_0003'
+        });
+    });
 
 
 module.exports = router;

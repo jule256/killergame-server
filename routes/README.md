@@ -1,10 +1,21 @@
 # REST API
-⚠  Don't forget to add the Header "_Content-Type application/json_" to your requests.
+⚠  Don't forget to add the Header "_Content-Type application/json_" to all your requests.
+
+## restricted and unrestricted endpoints
+
+Restricted endpoints (marked with a 🔐 below) are only accessable with a token. A token can be obtained by a correct login using the [POST /login endpoint](README.md#endpoint-login) and is basically a long string containing of numbers and letters.
+
+To get data from a restricted endpoint, the token has to be send using a custom header:
+```
+x-access-token: <the token string>
+```
+
+Unrestricted endpoints (marked with a 🔓 below) are accessible without the custom `x-access-token` header.
 
 **@todo:** documentation of responses in case of errors
 
 ### Endpoint REGISTER
-**POST /register** creates a new player with the given payload
+**🔓 POST /register** creates a new player with the given payload
 ```
 Payload
 {
@@ -32,13 +43,13 @@ Response
     }
 ```
 ---
-**GET /register** lists all players with default offset, default limit, and default sorting
+**🔓 GET /register** lists all players with default offset, default limit, and default sorting
 
-**GET /register/limit/`<limit-value>`** lists all players with limit `<limit-value>`, default offset and default sorting
+**🔓 GET /register/limit/`<limit-value>`** lists all players with limit `<limit-value>`, default offset and default sorting
 
-**GET /register/limit/`<limit-value>`/offset/`<offset-value>`** lists all players with limit `<limit-value>`, offset `<offset-value>`, and default sorting
+**🔓 GET /register/limit/`<limit-value>`/offset/`<offset-value>`** lists all players with limit `<limit-value>`, offset `<offset-value>`, and default sorting
 
-**GET /register/limit/`<limit-value>`/offset/`<offset-value>`/sort/`<sort-column>`/`<sort-direction>`** lists all players with limit `<limit-value>`, offset `<offset-value>` sorted by `<sort-column>` in direction `<sort-direction>` (can be `asc` or `desc`)
+**🔓 GET /register/limit/`<limit-value>`/offset/`<offset-value>`/sort/`<sort-column>`/`<sort-direction>`** lists all players with limit `<limit-value>`, offset `<offset-value>` sorted by `<sort-column>` in direction `<sort-direction>` (can be `asc` or `desc`)
 ```
 Response
     {
@@ -66,7 +77,7 @@ Response
     }
 ```
 ---
-**GET /register/`<playerId>`** returns data of the player with the id `<playerId>`
+**🔓 GET /register/`<playerId>`** returns data of the player with the id `<playerId>`
 ```
 Response
     {
@@ -82,7 +93,7 @@ Response
    }
 ```
 ---
-**PUT /register/`<playerId>`** updates the data of the player with the given `<playerId>`
+**🔐 PUT /register/`<playerId>`** updates the data of the player with the given `<playerId>`
 ```
 Payload
 {
@@ -111,9 +122,9 @@ Response
     }
 ```
 ---
-**DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(not implemented yet)
+**🔐 DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(not implemented yet)
 ### Endpoint GAME
-**POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>` with the dimensions of `<fieldWidth>` &times; `<fieldHeight>` (optional)
+**🔐 POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>` with the dimensions of `<fieldWidth>` &times; `<fieldHeight>` (optional)
 ```
 Payload
 {
@@ -141,10 +152,10 @@ Response
     }
 ```
 ---
-**GET /game** lists all games (not implemented yet)
+**🔐 GET /game** lists all games (not implemented yet)
 
 ---
-**GET /game/`<gameId>`** returns data of the game with the id `<gameId>`
+**🔐 GET /game/`<gameId>`** returns data of the game with the id `<gameId>`
 ```
 Response
     {
@@ -162,7 +173,7 @@ Response
     }
 ```
 ---
-**PUT /game/`<gameId>`** puts a piece at the coordinate `<x coordinate>`/`<y coordinate>` for the username `<theUsername>` in the game with the id `<gameId>`
+**🔐 PUT /game/`<gameId>`** puts a piece at the coordinate `<x coordinate>`/`<y coordinate>` for the username `<theUsername>` in the game with the id `<gameId>`
 ```
 Payload
 {
@@ -190,7 +201,7 @@ Response
     }
 ```
 ### Endpoint LOGIN
-**POST /login** returns the auth-token for the player with username `<username>` and password `<password>` if the player exists in database
+**🔓 POST /login** returns the auth-token for the player with username `<username>` and password `<password>` if the player exists in database
 ```
 Payload
 {
@@ -208,7 +219,7 @@ Response
 ---
 
 ### Endpoint DEV
-**POST /dev** is a development route you can use to debug/test things
+**🔓 POST /dev** is a development route you can use to debug/test things
 ```
 Payload
 {
@@ -217,7 +228,7 @@ Payload
 }
 ```
 ---
-**GET /dev** is a development route you can use to debug/test things
+**🔓 GET /dev** is a development route you can use to debug/test things
 
 
 

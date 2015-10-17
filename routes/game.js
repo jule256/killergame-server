@@ -139,12 +139,10 @@ router.route('/:gameId')
                         }
                         // continue code-flow at saveGame()
                         saveGame(game, moveData, res);
-                        return;
                     });
                 }, function(error) {
                     // error callback
                     Auxiliary.sendErrorResponse(res, error);
-                    return;
                 });
             }
             else if (game.checkForDraw()) {
@@ -173,18 +171,15 @@ router.route('/:gameId')
                                 }
                                 // continue code-flow at saveGame()
                                 saveGame(game, moveData, res);
-                                return;
                             });
                         }, function(error) {
                             // error callback
                             Auxiliary.sendErrorResponse(res, error);
-                            return;
                         });
                     });
                 }, function(error) {
                     // error callback
                     Auxiliary.sendErrorResponse(res, error);
-                    return;
                 });
             }
             else {
@@ -194,7 +189,6 @@ router.route('/:gameId')
 
                 // continue code-flow at saveGame()
                 saveGame(game, moveData, res);
-                return;
             }
         }, function(error) {
             // error callback

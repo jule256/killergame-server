@@ -33,8 +33,15 @@ AuthHelper = {
                     });
                 }
                 else {
+                    // {
+                    //    "username": "<username>",
+                    //    "playerId": "<playerId>",
+                    //    "password": "<hashed password>",
+                    //    "iat": <create timestamp>,
+                    //    "exp": <valid until timestamp>
+                    // }
+                    req.decodedToken = decoded;
                     // token is valid, go to next middleware
-                    req.decoded = decoded;
                     next();
                 }
             });
@@ -48,22 +55,41 @@ AuthHelper = {
             });
         }
     },
+
     /**
-     * takes the given username&password and combines it with the tokenhash to a token.
+     * takes the given username&playerId&password and combines it with the tokenhash to a token.
      * note that the password is stored hashed in the token
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {String} username
+     * @param {String} playerId
      * @param {String} password
      */
-    createToken: function(username, password) {
+    createToken: function(username, playerId, password) {
         return Jwt.sign({
             username: username,
+            playerId: playerId,
             password: Md5(password + config.passwordHash)
         }, config.tokenHash, {
             expiresIn: 86400 // 24 hours
         });
+    },
+
+    /**
+     * checks if the given needle is in the given array and returns true if so
+     *
+     * used to check if the token-username or token-playerId is participating in the game respectively is the actual
+     * player to be updated
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {String} needle
+     * @param {Array.<String>} haystack
+     * @returns {boolean}
+     */
+    isNeedleInHaystack: function(needle, haystack) {
+        return haystack.indexOf(needle + '') !== -1;
     }
 };
 

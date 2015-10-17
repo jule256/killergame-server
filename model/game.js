@@ -6,7 +6,7 @@
 var mongoose = require('mongoose');
 
 var gameSchema = new mongoose.Schema({
-    gameId: { type: Number, default: Date.now() },
+    gameId: { type: Number, default: Date.now() }, // @todo use https://www.npmjs.com/package/shortid instead of Date
     field: String, // json string
     fieldWidth: { type: Number, default: 10 },
     fieldHeight: { type: Number, default: 10 },

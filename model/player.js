@@ -9,7 +9,7 @@ var mongoose = require('mongoose'),
     PlayerRepository = require('../repository/player');
 
 var playerSchema = new mongoose.Schema({
-    playerId: { type: Number, default: Date.now() },
+    playerId: { type: Number, default: Date.now() }, // @todo use https://www.npmjs.com/package/shortid instead of Date
     name: String,
     username: String,
     email: String,

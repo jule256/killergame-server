@@ -153,6 +153,15 @@ router.route('/:playerId(\\d+)') // (\\d+) ensures to trigger only on numbers
         var playerData = PlayerRepository.getPlayerData(req.body, req.playerId),
             playerModel = mongoose.model('Player');
 
+        if (!AuthHelper.isNeedleInHaystack(req.decodedToken.playerId, [ playerData.playerId ])) {
+            ErrorHelper.sendErrorResponse(res, {
+                code: 403,
+                text: 'only own player-data can be updated',
+                key: 'player_register_0004'
+            });
+            return;
+        }
+
         PlayerRepository.validatePlayerData(playerData).then(function() {
             // resolve callback
             PlayerRepository.updatePlayer(playerModel, playerData).then(function(player) {

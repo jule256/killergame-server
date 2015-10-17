@@ -83,7 +83,8 @@ GameRepository = {
             // check if given player usernames are identical
             if (gameData.player1 === gameData.player2) {
                 reject({
-                    text: 'player1 and player2 can\'t be the same'
+                    text: 'player1 and player2 can\'t be the same',
+                    key: 'game_0009'
                 });
             }
 
@@ -92,7 +93,8 @@ GameRepository = {
                 typeof gameData.player2 === 'undefined') {
 
                 reject({
-                    text: 'player1 and/or player2 username not set'
+                    text: 'player1 and/or player2 username not set',
+                    key: 'game_0008'
                 });
             }
 
@@ -108,7 +110,8 @@ GameRepository = {
 
                 if (players.length !== 2) {
                     reject({
-                        text: 'player not found in database'
+                        text: 'player not found in database',
+                        key: 'game_0007'
                     });
                 }
                 else {

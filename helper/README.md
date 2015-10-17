@@ -15,6 +15,8 @@
 | `player_0001`        | player with id `<playerId>` does not exist | - |
 | `player_0002`        | player with id `<username>` does not exist | - |
 | ``      |  | - |
+| `player_login_0001`  | username and/or password is invalid        | - |
+| ``      |  | - |
 | `game_0001`      | game with id "`<gameId>`" does not exist          | - |
 | `game_0002`      | game does not belong to user `<username>`         | - |
 | `game_0003`      | this game is already over                         | - |

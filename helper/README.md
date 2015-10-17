@@ -8,6 +8,7 @@
 | `player_register_0001`      | not all necessary data is set          | - |
 | `player_register_0002`      | passwords do not match                 | - |
 | `player_register_0003`      | player already exists in database      | - |
+| `player_register_0004`      | only own player-data can be updated    | - |
 | ``      |  | - |
 | `player_update_0001`      | not all necessary data is set            | - |
 | `player_update_0002`      | email address already exists in database | - |
@@ -29,6 +30,9 @@
 | `game_0007`      | player not found in database                      | - |
 | `game_0008`      | player1 and/or player2 username not set           | - |
 | `game_0009`      | player1 and player2 can't be the same             | - |
+| `game_0010`      | cannot create game for other players              | - |
+| `game_0011`      | cannot retrieve game of other players             | - |
+| `game_0012`      | cannot make move for game of other players        | - |
 | ``      |  | - |
 | ``      |  | - |
 | ``      |  | - |

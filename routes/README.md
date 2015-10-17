@@ -3,7 +3,7 @@
 
 ## restricted and unrestricted endpoints
 
-Restricted endpoints (marked with a 🔐 below) are only accessable with a token. A token can be obtained by a correct login using the [POST /login endpoint](README.md#endpoint-login) and is basically a long string containing of numbers and letters.
+Restricted endpoints (marked with a 🔐 below) are only accessable with a token. A token can be obtained by a correct login using the [POST /login endpoint](README.md#endpoint-login) and is basically a long string containing numbers and letters.
 
 To get data from a restricted endpoint, the token has to be send using a custom header:
 ```
@@ -107,18 +107,15 @@ Example {"name": "Spieler 3 neu", "email": "spieler3neu@example.com", "password_
 ```
 Response
     {
-        "game": {
-            "field": "[<field>]", // JSON stringified array
-            "player1": "<usernamePlayer1>",
-            "player2": "<usernamePlayer2>",
-            "setCoord": [], // will contain the coordinates of the winning set if the game is over
-            "status": "<status>", // can be 'inprogress' or 'finished'
-            "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
-            "fieldHeight": 10,
-            "fieldWidth": 10,
-            "gameId": <gameId> // the gameId is needed for all game related requests
-        }
-        // @todo maybe add "lastMoveData" to the response
+        "player": {
+            "playerId": <playerId> // the playerId is needed for all player related requests
+	        "password": "<the hashed secret password>",
+	        "name": "<name of the player>",
+	        "email": "<email-address of the player>",
+	        "username": "<username of the player>",
+	        "active": <boolean>, // true or false
+	        "score": <number> // the current score of the player
+    	}
     }
 ```
 ---

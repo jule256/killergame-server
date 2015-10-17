@@ -34,7 +34,7 @@ router.route('/')
             res.format({
                 json: function() {
                     res.json({
-                        token: AuthHelper.createToken(loginData.username, loginData.password)
+                        token: AuthHelper.createToken(player.username, player.playerId, player.password)
                     });
                 }
             });

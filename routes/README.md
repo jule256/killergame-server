@@ -27,7 +27,8 @@ Response
 	        "username": "<username of the player>",
 	        "active": true,
 	        "score": 0
-	    }
+	    },
+	    "token": "<the token usable to access restricted endpoints>"
     }
 ```
 ---
@@ -188,6 +189,24 @@ Response
         // @todo maybe add "lastMoveData" to the response
     }
 ```
+### Endpoint LOGIN
+**POST /login** returns the auth-token for the player with username `<username>` and password `<password>` if the player exists in database
+```
+Payload
+{
+    "username": "<username>",
+    "password": "<password>"
+}
+Example {"username": "spieler_1", "password": "secret-password"}
+```
+```
+Response
+    {
+        "token": "<the-secret-token>"
+    }
+```
+---
+
 ### Endpoint DEV
 **POST /dev** is a development route you can use to debug/test things
 ```

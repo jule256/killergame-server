@@ -51,7 +51,7 @@ router.param('direction', function(req, res, next, direction) {
 
 // actual routes ------
 
-router.route('/:playerId(\\d+)') // (\\d+) ensures to trigger only on numbers
+router.route('/:playerId')
     // GET returns the player with the given id
     .get(function(req, res, next) {
         var playerId = req.playerId;
@@ -147,7 +147,7 @@ router.use(AuthHelper.verifyToken);
 
 // @todo return new token
 
-router.route('/:playerId(\\d+)') // (\\d+) ensures to trigger only on numbers
+router.route('/:playerId')
     // PUT to update a player
     .put(function(req, res) {
         var playerData = PlayerRepository.getPlayerData(req.body, req.playerId),

@@ -5,11 +5,12 @@
 
 var mongoose = require('mongoose'),
     Md5 = require('md5'),
+    Shortid = require('shortid'),
     config = require('../config/config'),
     PlayerRepository = require('../repository/player');
 
 var playerSchema = new mongoose.Schema({
-    playerId: { type: Number, default: Date.now() }, // @todo use https://www.npmjs.com/package/shortid instead of Date
+    playerId: { type: String, default: Shortid.generate() },
     name: String,
     username: String,
     email: String,

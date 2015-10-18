@@ -3,10 +3,11 @@
 
 'use strict';
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    Shortid = require('shortid');
 
 var gameSchema = new mongoose.Schema({
-    gameId: { type: Number, default: Date.now() }, // @todo use https://www.npmjs.com/package/shortid instead of Date
+    gameId: { type: String, default: Shortid.generate() },
     field: String, // json string
     fieldWidth: { type: Number, default: 10 },
     fieldHeight: { type: Number, default: 10 },

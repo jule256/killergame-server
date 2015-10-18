@@ -33,7 +33,7 @@ AuthHelper = {
                     });
                 }
                 else {
-                    // {
+                    // decoded = {
                     //    "username": "<username>",
                     //    "playerId": "<playerId>",
                     //    "password": "<hashed password>",

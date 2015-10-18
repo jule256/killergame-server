@@ -12,7 +12,7 @@ GameRepository = {
      * @public
      * @param {number} gameId
      * @param {string} status
-     * @param {string | undefined} username
+     * @param {string} [username]
      * @returns {bluebird|exports|module.exports}
      */
     getGame: function (gameId, status, username) {

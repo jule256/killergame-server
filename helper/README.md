@@ -33,7 +33,7 @@
 | `game_0010`      | cannot create game for other players              | - |
 | `game_0011`      | cannot retrieve game of other players             | - |
 | `game_0012`      | cannot make move for game of other players        | - |
-| ``      |  | - |
+| `game_0013`      | cannot forfeit game of other players              | - |
 | ``      |  | - |
 | ``      |  | - |
 | ``      |  | - |

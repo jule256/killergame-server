@@ -12,11 +12,12 @@ var gameSchema = new mongoose.Schema({
     fieldHeight: { type: Number, default: 10 },
     activePlayer: { type: String, default: 'player1' }, // magic strings?
     status: { type: String, default: 'prestart' }, // magic strings?
+    result: { type: String, default: '' }, // magic strings?
     created_at: { type: Date, default: Date.now },
     player1: String, // username of player 1
     player2: String, // username of player 2
     setCoord: { type: Array, default: [] }, // where the winning set is stored
-    moveCount: { type: Number, default: 0 }, // contains the number of completed moves (needed for "draw-detection")
+    moveCount: { type: Number, default: 0 } // contains the number of completed moves (needed for "draw-detection")
 });
 
 /**
@@ -188,7 +189,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 0, -1, 0);
     if (setCoord.length === 5) {
-        this.finishGame(setCoord);
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
         return true;
     }
 
@@ -196,7 +197,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 0, 1, 0, -1);
     if (setCoord.length === 5) {
-        this.finishGame(setCoord);
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
         return true;
     }
 
@@ -204,7 +205,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 1, -1, -1);
     if (setCoord.length === 5) {
-        this.finishGame(setCoord);
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
         return true;
     }
 
@@ -212,7 +213,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, -1, 1, 1, -1);
     if (setCoord.length === 5) {
-        this.finishGame(setCoord);
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
         return true;
     }
 
@@ -241,19 +242,10 @@ gameSchema.methods.checkForWinDirection1 =
         x,
         y;
 
-//  console.log('checkForWinDirection1(), startX: ' + startX + ', startModX: ' + startModX + ', incrementModX: ' + incrementModX);
-//  console.log('checkForWinDirection1(), startY: ' + startY + ', startModY: ' + startModY + ', incrementModY: ' + incrementModY);
-//  console.log('checkForWinDirection1(), setting x to ' + (startX + startModX * 1));
-//  console.log('checkForWinDirection1(), continuing at x >= ' + (startX + startModX * 4));
-//  console.log('checkForWinDirection1(), setting y to ' + (startY + startModY * 1));
-//  console.log('checkForWinDirection1(), continuing at y >= ' + (startY + startModY * 4));
-
     //noinspection PointlessArithmeticExpressionJS
     for (x = (startX - startModX * 1), y = (startY - startModY * 1);
          true; // bounds-check is ensured by 'setCoord.length === 5' and 'validateMoveDataInsideBounds()'
          x = x + incrementModX * 1,    y = y + incrementModY * 1) {
-
-//      console.log('checking ' + x + '/' + y + ' -> "' + fieldObj[x][y] + '", piece = ' + piece);
 
         if (this.validateMoveDataInsideBounds(x, y)) {
             if (fieldObj[x][y] === piece) {
@@ -296,20 +288,10 @@ gameSchema.methods.checkForWinDirection2 =
         x,
         y;
 
-//  console.log('checkForWinDirection2(), startX: ' + startX + ', startModX: ' + startModX + ', incrementModX: ' + incrementModX);
-//  console.log('checkForWinDirection2(), startY: ' + startY + ', startModY: ' + startModY + ', incrementModY: ' + incrementModY);
-//  console.log('checkForWinDirection2(), setCoord: ', setCoord);
-//  console.log('checkForWinDirection2(), setting x to ' + (startX + startModX * 1));
-//  console.log('checkForWinDirection2(), continuing at x =< ' + (startX + startModX * 4));
-//  console.log('checkForWinDirection2(), setting y to ' + (startY + startModY * 1));
-//  console.log('checkForWinDirection2(), continuing at y =< ' + (startY + startModY * 4));
-
     //noinspection PointlessArithmeticExpressionJS
     for (x = (startX + startModX * 1), y = (startY + startModY * 1);
          true; // bounds-check is ensured by 'setCoord.length === 5' and 'validateMoveDataInsideBounds()'
          x = x + incrementModX * -1,   y = y + incrementModY * -1) {
-
-//      console.log('checkForWinDirection2() loop, checking: ' + x + '/' + y + ' ...');
 
         if (this.validateMoveDataInsideBounds(x, y)) {
             if (fieldObj[x][y] === piece) {
@@ -329,19 +311,35 @@ gameSchema.methods.checkForWinDirection2 =
 };
 
 /**
- * finishes this game (but only if the game is not already finished) and sets the winning set's coordinates
- * (but only if a setCoord object is passed)
+ * finishes this game (but only if the game is not already finished), sets this game's result to the given result and
+ * sets the winning set's coordinates (but only if a setCoord object is passed)
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @private
+ * @param {String} result
+ * @param {Array} [setCoord]
+ * @param setCoord
  */
-gameSchema.methods.finishGame = function finishGame(setCoord) {
+gameSchema.methods.finishGame = function finishGame(result, setCoord) {
     if (this.status !== 'finished') {
         this.status = 'finished'; // magic strings?
+        this.result = result;
         if (typeof setCoord !== 'undefined') {
             this.setCoord = setCoord; // store the winning set of coordinates
         }
     }
+};
+
+/**
+ * returns "player1" if this games player1 is the given username. Otherwise "player"
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @private
+ * @param {String} username
+ * @returns {String}
+ */
+gameSchema.methods.usernameToPlayerX = function usernameToPlayerX(username) {
+    return this.player1 === username ? 'player1' : 'player2';
 };
 
 /**
@@ -353,10 +351,21 @@ gameSchema.methods.finishGame = function finishGame(setCoord) {
  */
 gameSchema.methods.checkForDraw = function checkForDraw() {
     if (+this.moveCount === +(this.fieldHeight * this.fieldWidth)) {
-        this.finishGame();
+        this.finishGame('draw'); // magic strings?
         return true;
     }
     return false;
+};
+
+/**
+ * lets moveData.username forfeit the game
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @public
+ * @param {object} moveData
+ */
+gameSchema.methods.forfeit = function forfeit(moveData) {
+    this.finishGame('forfeit_' + this.usernameToPlayerX(moveData.username)); // magic strings?
 };
 
 /**

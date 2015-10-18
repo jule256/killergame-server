@@ -1,7 +1,7 @@
 # REST API
 ⚠  Don't forget to add the Header "_Content-Type application/json_" to all your requests.
 
-## restricted and unrestricted endpoints
+## Restricted and unrestricted endpoints
 
 Restricted endpoints (marked with a 🔐 below) are only accessable with a token. A token can be obtained by a correct login using the [POST /login endpoint](README.md#endpoint-login) and is basically a long string containing numbers and letters.
 
@@ -12,7 +12,11 @@ x-access-token: <the token string>
 
 Unrestricted endpoints (marked with a 🔓 below) are accessible without the custom `x-access-token` header.
 
-**@todo:** documentation of responses in case of errors
+## Restricted and unrestricted endpoints
+
+Possible response error key/text values are outlined in the [list of error response keys](../helper/README.md).
+
+## Endpoints
 
 ### Endpoint REGISTER
 **🔓 POST /register** creates a new player with the given payload
@@ -141,6 +145,7 @@ Response
             "player2": "<usernamePlayer2>",
             "setCoord": [], // will contain the coordinates of the winning set if the game is over
             "status": "prestart",
+            "result": "",
             "activePlayer": "player1", // the currently active player, can be 'player1' or 'player2'
             "fieldHeight": 10,
             "fieldWidth": 10,
@@ -162,6 +167,7 @@ Response
             "player2": "<usernamePlayer2>",
             "setCoord": [], // will contain the coordinates of the winning set if the game is over
             "status": "<status>", // can be 'prestart', 'inprogress', 'finished'
+            "result": "" // can be 'forfeit_player1' or 'forfeit_player2' or 'win_player1' or 'win_player2' or empty
             "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
             "fieldHeight": 10,
             "fieldWidth": 10,
@@ -189,12 +195,39 @@ Response
             "player2": "<usernamePlayer2>",
             "setCoord": [], // will contain the coordinates of the winning set if the game is over
             "status": "<status>", // can be 'inprogress' or 'finished'
+            "result": "win_player2" // can be 'win_player1' or 'win_player2' or empty
             "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
             "fieldHeight": 10,
             "fieldWidth": 10,
             "gameId": <gameId> // the gameId is needed for all game related requests
         }
         // @todo maybe add "lastMoveData" to the response
+    }
+```
+---
+**🔐 PUT /game/`<gameId>`/forfeit** forfeits the game with the id `<gameId>` for the player with the username `<theUsername>`
+```
+Payload
+{
+    "username": "<theUsername>"
+}
+Example {"username": "spieler 1"}
+```
+```
+Response
+    {
+        "game": {
+            "field": "[<field>]", // JSON stringified array
+            "player1": "<usernamePlayer1>",
+            "player2": "<usernamePlayer2>",
+            "setCoord": [], // will contain the coordinates of the winning set if the game is over
+            "status": "finished",
+            "result": "forfeit_player2" // can be 'forfeit_player1' or 'forfeit_player2'
+            "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
+            "fieldHeight": 10,
+            "fieldWidth": 10,
+            "gameId": <gameId> // the gameId is needed for all game related requests
+        }
     }
 ```
 ### Endpoint LOGIN

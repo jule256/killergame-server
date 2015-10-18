@@ -43,7 +43,7 @@ router.param('gameId', function(req, res, next, gameId) {
  * @author Julian Mollik <jule@creative-coding.net>
  * @private
  * @param {mongoose.model} game
- * @param {object} moveData
+ * @param {object} moveData
  * @param {object} res
  */
 saveGame = function(game, moveData, res) {
@@ -188,7 +188,10 @@ router.route('/:gameId')
 
                     player1.save(function (err) {
                         if (err) {
-                            ErrorHelper.sendErrorResponse(res, err.toString());
+                            ErrorHelper.sendErrorResponse(res, {
+                                key: 'database_0002',
+                                text: 'there was an error writing to the database'
+                            });
                             return;
                         }
 
@@ -199,7 +202,10 @@ router.route('/:gameId')
 
                             player2.save(function (err) {
                                 if (err) {
-                                    ErrorHelper.sendErrorResponse(res, err.toString());
+                                    ErrorHelper.sendErrorResponse(res, {
+                                        key: 'database_0002',
+                                        text: 'there was an error writing to the database'
+                                    });
                                     return;
                                 }
                                 // continue code-flow at saveGame()
@@ -233,6 +239,54 @@ router.route('/:gameId')
             code: 404,
             text: 'DELETE /game is not implemented yet',
             key: 'todo_0002'
+        });
+    });
+
+router.route('/:gameId/forfeit')
+    // PUT to forfeit the game
+    .put(function(req, res) {
+        var moveData = GameRepository.getMoveData(req.body, req.gameId),
+            otherPlayer;
+
+        if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ moveData.username ])) {
+            ErrorHelper.sendErrorResponse(res, {
+                code: 403,
+                text: 'cannot forfeit game of other players',
+                key: 'game_0013'
+            });
+            return;
+        }
+
+        GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
+            // resolve callback
+
+            // forfeit game
+            game.forfeit(moveData);
+
+            otherPlayer = game.usernameToPlayerX(moveData.username) === 'player1' ? 'player2' : 'player1';
+
+            PlayerRepository.getPlayerByUsername(game[otherPlayer]).then(function(player) {
+                // resolve callback
+                player.increaseScore();
+
+                player.save(function (err) {
+                    if (err) {
+                        ErrorHelper.sendErrorResponse(res, {
+                            key: 'database_0002',
+                            text: 'there was an error writing to the database'
+                        });
+                        return;
+                    }
+                    // continue code-flow at saveGame()
+                    saveGame(game, moveData, res);
+                });
+            }, function(error) {
+                // error callback
+                ErrorHelper.sendErrorResponse(res, error);
+            });
+        }, function(error) {
+            // error callback
+            ErrorHelper.sendErrorResponse(res, error);
         });
     });
 

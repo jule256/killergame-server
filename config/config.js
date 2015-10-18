@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
 
     // hash for password storage

@@ -452,7 +452,6 @@ PlayerRepository = {
             blacklistExclude = this.getBlacklistExcludeString();
 
         return new Promise(function(resolve, reject) {
-
             mongoose.model('Player').find({}, blacklistExclude, {
                 limit: params.limit,
                 skip: params.offset,

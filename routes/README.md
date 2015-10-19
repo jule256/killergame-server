@@ -12,7 +12,7 @@ x-access-token: <the token string>
 
 Unrestricted endpoints (marked with a 🔓 below) are accessible without the custom `x-access-token` header.
 
-## Restricted and unrestricted endpoints
+## Error Responses
 
 Possible response error key/text values are outlined in the [list of error response keys](../helper/README.md).
 
@@ -33,18 +33,18 @@ Example {"name": "Spieler 3", "username": "spieler_3", "email": "spieler3@exampl
 ```
 ```
 Response
-    {
-        "player": {
-        	"playerId": <playerId> // the playerId is needed for all player related requests
-	        "password": "<the hashed secret password>",
-	        "name": "<name of the player>",
-	        "email": "<email-address of the player>",
-	        "username": "<username of the player>",
-	        "active": true,
-	        "score": 0
-	    },
-	    "token": "<the token usable to access restricted endpoints>"
-    }
+{
+    "player": {
+        "playerId": <playerId> // the playerId is needed for all player related requests
+        "password": "<the hashed secret password>",
+        "name": "<name of the player>",
+        "email": "<email-address of the player>",
+        "username": "<username of the player>",
+        "active": true,
+        "score": 0
+    },
+    "token": "<the token usable to access restricted endpoints>"
+}
 ```
 ---
 **🔓 GET /register** lists all players with default offset, default limit, and default sorting
@@ -56,36 +56,36 @@ Response
 **🔓 GET /register/limit/`<limit-value>`/offset/`<offset-value>`/sort/`<sort-column>`/`<sort-direction>`** lists all players with limit `<limit-value>`, offset `<offset-value>` sorted by `<sort-column>` in direction `<sort-direction>` (can be `asc` or `desc`)
 ```
 Response
-    {
-        "players": [
-	        {
-	        	"playerId": <playerId> // the playerId is needed for all player related requests
-		        "password": "<the hashed secret password>",
-		        "name": "<name of the player>",
-		        "email": "<email-address of the player>",
-		        "username": "<username of the player>",
-		        "active": true,
-		        "score": <score of the player>
-	        },
-	        // further players skipped
-	    ]
-    }
+{
+    "players": [
+        {
+            "playerId": <playerId> // the playerId is needed for all player related requests
+            "password": "<the hashed secret password>",
+            "name": "<name of the player>",
+            "email": "<email-address of the player>",
+            "username": "<username of the player>",
+            "active": true,
+            "score": <score of the player>
+        },
+        // further players skipped
+    ]
+}
 ```
 ---
 **🔓 GET /register/`<playerId>`** returns data of the player with the id `<playerId>`
 ```
 Response
-    {
-        "player": {
-        	"playerId": <playerId> // the playerId is needed for all player related requests
-	        "password": "<the hashed secret password>",
-	        "name": "<name of the player>",
-	        "email": "<email-address of the player>",
-	        "username": "<username of the player>",
-	        "active": <boolean>, // true or false
-	        "score": <number> // the current score of the player
-	    }
-   }
+{
+    "player": {
+        "playerId": <playerId> // the playerId is needed for all player related requests
+        "password": "<the hashed secret password>",
+        "name": "<name of the player>",
+        "email": "<email-address of the player>",
+        "username": "<username of the player>",
+        "active": <boolean>, // true or false
+        "score": <number> // the current score of the player
+    }
+}
 ```
 ---
 **🔐 PUT /register/`<playerId>`** updates the data of the player with the given `<playerId>`
@@ -101,17 +101,17 @@ Example {"name": "Spieler 3 neu", "email": "spieler3neu@example.com", "password_
 ```
 ```
 Response
-    {
-        "player": {
-            "playerId": <playerId> // the playerId is needed for all player related requests
-	        "password": "<the hashed secret password>",
-	        "name": "<name of the player>",
-	        "email": "<email-address of the player>",
-	        "username": "<username of the player>",
-	        "active": <boolean>, // true or false
-	        "score": <number> // the current score of the player
-    	}
+{
+    "player": {
+        "playerId": <playerId> // the playerId is needed for all player related requests
+        "password": "<the hashed secret password>",
+        "name": "<name of the player>",
+        "email": "<email-address of the player>",
+        "username": "<username of the player>",
+        "active": <boolean>, // true or false
+        "score": <number> // the current score of the player
     }
+}
 ```
 ---
 **🔐 DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(not implemented yet)
@@ -129,69 +129,67 @@ Example {"player1": "spieler 1", "player2": "spieler 2", "fieldWidth": 10, "fiel
 ```
 ```
 Response
-    {
-        "game": {
-            "player1": "<usernamePlayer1>",
-            "player2": "<usernamePlayer2>",
-            "field": "[<field>]", // JSON stringified array
-            "moveCount": 0,
-            "setCoord": [],
-            "status": "prestart",
-            "result": "",
-            "activePlayer": "player1", // the currently active player, can be 'player1' or 'player2'
-            "fieldHeight": 10,
-            "fieldWidth": 10,
-            "gameId": <gameId> // the gameId is needed for all game related requests
-        }
+{
+    "game": {
+        "player1": "<usernamePlayer1>",
+        "player2": "<usernamePlayer2>",
+        "field": "[<field>]", // JSON stringified array
+        "moveCount": 0,
+        "setCoord": [],
+        "status": "prestart",
+        "result": "",
+        "activePlayer": "player1", // the currently active player, can be 'player1' or 'player2'
+        "fieldHeight": 10,
+        "fieldWidth": 10,
+        "gameId": <gameId> // the gameId is needed for all game related requests
     }
+}
 ```
 ---
 **🔐 GET /game/challengee** lists all games in which the token username is "player2" ("he or she was challenged") and the status is "prestart" (meaning the challange has not been accepted yet)
 ```
 Response
-    {
-        "games":
-        [
-            {
-                "player1": "<usernamePlayer1>",
-                "player2": "<usernamePlayer2>", // identical to the username encoded in the token
-                "field": "[<field>]", // JSON stringified array
-                "moveCount": 0,
-                "setCoord": [],
-                "result": "",
-                "status": "prestart",
-                "activePlayer": "<usernamePlayer1>",
-                "fieldHeight": 10,
-                "fieldWidth": 10,
-                "gameId": <gameId>
-            },
-            // further games skipped
-        ]
-    }
+{
+    "games": [
+        {
+            "player1": "<usernamePlayer1>",
+            "player2": "<usernamePlayer2>", // identical to the username encoded in the token
+            "field": "[<field>]", // JSON stringified array
+            "moveCount": 0,
+            "setCoord": [],
+            "result": "",
+            "status": "prestart",
+            "activePlayer": "<usernamePlayer1>",
+            "fieldHeight": 10,
+            "fieldWidth": 10,
+            "gameId": <gameId>
+        },
+        // further games skipped
+    ]
+}
 ```
 ---
 **🔐 GET /game/challenger** lists all games in which the token username is "player1" ("he or she challenged somebody") and the status is "prestart" (meaning the challangee has not accepted yet)
 ```
 Response
-    {
-        "games":
-        [
-            {
-                "player1": "<usernamePlayer1>", // identical to the username encoded in the token
-                "player2": "<usernamePlayer2>",
-                "field": "[<field>]", // JSON stringified array
-                "moveCount": 0,
-                "setCoord": [],
-                "result": "",
-                "status": "prestart",
-                "activePlayer": "<usernamePlayer1>",
-                "fieldHeight": 10,
-                "fieldWidth": 10,
-                "gameId": <gameId>
-            },
-            // further games skipped
-        ]
-    }
+{
+    "games": [
+        {
+            "player1": "<usernamePlayer1>", // identical to the username encoded in the token
+            "player2": "<usernamePlayer2>",
+            "field": "[<field>]", // JSON stringified array
+            "moveCount": 0,
+            "setCoord": [],
+            "result": "",
+            "status": "prestart",
+            "activePlayer": "<usernamePlayer1>",
+            "fieldHeight": 10,
+            "fieldWidth": 10,
+            "gameId": <gameId>
+        },
+        // further games skipped
+    ]
+}
 ```
 ---
 **🔐 GET /game** lists all games (not implemented yet)
@@ -200,20 +198,20 @@ Response
 **🔐 GET /game/`<gameId>`** returns data of the game with the id `<gameId>`
 ```
 Response
-    {
-        "game": {
-            "field": "[<field>]", // JSON stringified array
-            "player1": "<usernamePlayer1>",
-            "player2": "<usernamePlayer2>",
-            "setCoord": [], // will contain the coordinates of the winning set if the game is over
-            "status": "<status>", // can be 'prestart', 'inprogress', 'finished'
-            "result": "" // can be 'forfeit_player1' or 'forfeit_player2' or 'win_player1' or 'win_player2' or empty
-            "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
-            "fieldHeight": 10,
-            "fieldWidth": 10,
-            "gameId": <gameId> // the gameId is needed for all game related requests
-        }
+{
+    "game": {
+        "field": "[<field>]", // JSON stringified array
+        "player1": "<usernamePlayer1>",
+        "player2": "<usernamePlayer2>",
+        "setCoord": [], // will contain the coordinates of the winning set if the game is over
+        "status": "<status>", // can be 'prestart', 'inprogress', 'finished'
+        "result": "" // can be 'forfeit_player1' or 'forfeit_player2' or 'win_player1' or 'win_player2' or empty
+        "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
+        "fieldHeight": 10,
+        "fieldWidth": 10,
+        "gameId": <gameId> // the gameId is needed for all game related requests
     }
+}
 ```
 ---
 **🔐 PUT /game/`<gameId>`** puts a piece at the coordinate `<x coordinate>`/`<y coordinate>` for the username `<theUsername>` in the game with the id `<gameId>`
@@ -228,21 +226,21 @@ Example {"x": "4", "y": "3", "username": "spieler 1"}
 ```
 ```
 Response
-    {
-        "game": {
-            "field": "[<field>]", // JSON stringified array
-            "player1": "<usernamePlayer1>",
-            "player2": "<usernamePlayer2>",
-            "setCoord": [], // will contain the coordinates of the winning set if the game is over
-            "status": "<status>", // can be 'inprogress' or 'finished'
-            "result": "win_player2" // can be 'win_player1' or 'win_player2' or empty
-            "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
-            "fieldHeight": 10,
-            "fieldWidth": 10,
-            "gameId": <gameId> // the gameId is needed for all game related requests
-        }
-        // @todo maybe add "lastMoveData" to the response
+{
+    "game": {
+        "field": "[<field>]", // JSON stringified array
+        "player1": "<usernamePlayer1>",
+        "player2": "<usernamePlayer2>",
+        "setCoord": [], // will contain the coordinates of the winning set if the game is over
+        "status": "<status>", // can be 'inprogress' or 'finished'
+        "result": "win_player2" // can be 'win_player1' or 'win_player2' or empty
+        "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
+        "fieldHeight": 10,
+        "fieldWidth": 10,
+        "gameId": <gameId> // the gameId is needed for all game related requests
     }
+    // @todo maybe add "lastMoveData" to the response
+}
 ```
 ---
 **🔐 PUT /game/`<gameId>`/forfeit** forfeits the game with the id `<gameId>` for the player with the username `<theUsername>`
@@ -255,20 +253,20 @@ Example {"username": "spieler 1"}
 ```
 ```
 Response
-    {
-        "game": {
-            "field": "[<field>]", // JSON stringified array
-            "player1": "<usernamePlayer1>",
-            "player2": "<usernamePlayer2>",
-            "setCoord": [], // will contain the coordinates of the winning set if the game is over
-            "status": "finished",
-            "result": "forfeit_player2" // can be 'forfeit_player1' or 'forfeit_player2'
-            "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
-            "fieldHeight": 10,
-            "fieldWidth": 10,
-            "gameId": <gameId> // the gameId is needed for all game related requests
-        }
+{
+    "game": {
+        "field": "[<field>]", // JSON stringified array
+        "player1": "<usernamePlayer1>",
+        "player2": "<usernamePlayer2>",
+        "setCoord": [], // will contain the coordinates of the winning set if the game is over
+        "status": "finished",
+        "result": "forfeit_player2" // can be 'forfeit_player1' or 'forfeit_player2'
+        "activePlayer": "player2", // the currently active player, can be 'player1' or 'player2'
+        "fieldHeight": 10,
+        "fieldWidth": 10,
+        "gameId": <gameId> // the gameId is needed for all game related requests
     }
+}
 ```
 ### Endpoint LOGIN
 **🔓 POST /login** returns the auth-token for the player with username `<username>` and password `<password>` if the player exists in database
@@ -282,9 +280,9 @@ Example {"username": "spieler_1", "password": "secret-password"}
 ```
 ```
 Response
-    {
-        "token": "<the-secret-token>"
-    }
+{
+    "token": "<the-secret-token>"
+}
 ```
 ---
 

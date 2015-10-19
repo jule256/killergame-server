@@ -4,7 +4,37 @@ var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
     GameRepository;
 
+/**
+ * model values which should NOT be delivered in responses
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @private
+ * @type {string[]}
+ */
+var blacklist = ['created_at', '__v', '_id'];
+
 GameRepository = {
+    /**
+     * returns the blacklist of the game model
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @returns {string[]}
+     */
+    getBlacklist: function() {
+        return blacklist;
+    },
+
+    /**
+     * creates a mongoose usable exclude string out of the blacklist and returns it
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @returns {string}
+     */
+    getBlacklistExcludeString: function() {
+        return '-' + blacklist.join(' -');
+    },
     /**
      * resolves with the game with the given gameId or rejects with an error if something went wrong
      *
@@ -15,7 +45,7 @@ GameRepository = {
      * @param {string} [username]
      * @returns {bluebird|exports|module.exports}
      */
-    getGame: function (gameId, status, username) {
+    getGame: function(gameId, status, username) {
         return new Promise(function (resolve, reject) {
             mongoose.model('Game').findOne({
                 gameId: gameId,
@@ -43,6 +73,41 @@ GameRepository = {
                     resolve(game);
                 }
             });
+        });
+    },
+
+    /**
+     * resolves with all games where the given username is playerX (being "player1" or "player") and the
+     * status is "prestart"
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {String} username
+     * @param {String} playerX
+     * @returns {bluebird|exports|module.exports}
+     */
+    getChallenges: function(username, playerX) {
+        var blacklistExclude = this.getBlacklistExcludeString(),
+            where = {
+                status: 'prestart'
+            };
+        return new Promise(function (resolve, reject) {
+            if (playerX !== 'player1' && playerX !== 'player2') {
+                reject();
+            }
+            where[playerX] = username;
+            mongoose.model('Game').find(where, blacklistExclude, null, function (err, games) {
+                if (err) {
+                    reject({
+                        text: 'there was an error querying the database',
+                        key: 'database_0001'
+                    });
+                }
+                else {
+                    resolve(games);
+                }
+            });
+
         });
     },
 

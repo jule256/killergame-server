@@ -67,10 +67,47 @@ saveGame = function(game, moveData, res) {
     });
 };
 
+router.route('/challengee')
+    // GET /challenged returns all games in state "prestart" with player as player2
+    .get(function(req, res, next) {
+        var username = req.decodedToken.username;
+        GameRepository.getChallenges(username, 'player2').then(function(games) {
+            // resolve callback
+            res.format({
+                json: function() {
+                    res.json({
+                        games: games
+                    });
+                }
+            });
+        }, function(error) {
+            // error callback
+            ErrorHelper.sendErrorResponse(res, error);
+        });
+    });
+
+router.route('/challenger')
+    // GET /challenged returns all games in state "prestart" with player as player1
+    .get(function(req, res, next) {
+        var username = req.decodedToken.username;
+        GameRepository.getChallenges(username, 'player1').then(function(games) {
+            // resolve callback
+            res.format({
+                json: function() {
+                    res.json({
+                        games: games
+                    });
+                }
+            });
+        }, function(error) {
+            // error callback
+            ErrorHelper.sendErrorResponse(res, error);
+        });
+    });
+
 router.route('/')
     // GET ALL returns ...
     .get(function(req, res, next) {
-        // @todo implement
         ErrorHelper.sendErrorResponse(res, {
             code: 404,
             text: 'GETLIST /game is not implemented yet',

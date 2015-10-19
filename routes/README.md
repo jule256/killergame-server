@@ -67,16 +67,7 @@ Response
 		        "active": true,
 		        "score": <score of the player>
 	        },
-	        [...]
-	        {
-	        	"playerId": <playerId> // the playerId is needed for all player related requests
-		        "password": "<the hashed secret password>",
-		        "name": "<name of the player>",
-		        "email": "<email-address of the player>",
-		        "username": "<username of the player>",
-		        "active": true,
-		        "score": <score of the player>
-	        },
+	        // further players skipped
 	    ]
     }
 ```
@@ -140,10 +131,11 @@ Example {"player1": "spieler 1", "player2": "spieler 2", "fieldWidth": 10, "fiel
 Response
     {
         "game": {
-            "field": "[<field>]", // JSON stringified array
             "player1": "<usernamePlayer1>",
             "player2": "<usernamePlayer2>",
-            "setCoord": [], // will contain the coordinates of the winning set if the game is over
+            "field": "[<field>]", // JSON stringified array
+            "moveCount": 0,
+            "setCoord": [],
             "status": "prestart",
             "result": "",
             "activePlayer": "player1", // the currently active player, can be 'player1' or 'player2'
@@ -151,6 +143,54 @@ Response
             "fieldWidth": 10,
             "gameId": <gameId> // the gameId is needed for all game related requests
         }
+    }
+```
+---
+**🔐 GET /game/challengee** lists all games in which the token username is "player2" ("he or she was challenged") and the status is "prestart" (meaning the challange has not been accepted yet)
+```
+Response
+    {
+        "games":
+        [
+            {
+                "player1": "<usernamePlayer1>",
+                "player2": "<usernamePlayer2>", // identical to the username encoded in the token
+                "field": "[<field>]", // JSON stringified array
+                "moveCount": 0,
+                "setCoord": [],
+                "result": "",
+                "status": "prestart",
+                "activePlayer": "<usernamePlayer1>",
+                "fieldHeight": 10,
+                "fieldWidth": 10,
+                "gameId": <gameId>
+            },
+            // further games skipped
+        ]
+    }
+```
+---
+**🔐 GET /game/challenger** lists all games in which the token username is "player1" ("he or she challenged somebody") and the status is "prestart" (meaning the challangee has not accepted yet)
+```
+Response
+    {
+        "games":
+        [
+            {
+                "player1": "<usernamePlayer1>", // identical to the username encoded in the token
+                "player2": "<usernamePlayer2>",
+                "field": "[<field>]", // JSON stringified array
+                "moveCount": 0,
+                "setCoord": [],
+                "result": "",
+                "status": "prestart",
+                "activePlayer": "<usernamePlayer1>",
+                "fieldHeight": 10,
+                "fieldWidth": 10,
+                "gameId": <gameId>
+            },
+            // further games skipped
+        ]
     }
 ```
 ---

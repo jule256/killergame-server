@@ -112,7 +112,7 @@ GameRepository = {
     },
 
     /**
-     * extracts the player1 and player2 value from the given reqBody object and returns an
+     * extracts player1 from the token and the player2 value both from the given reqBody object and returns an
      * object usable for creating a game
      * if reqBody contains fieldWidth or fieldHeight, the according values will be extracted
      * and added to the return object
@@ -124,7 +124,7 @@ GameRepository = {
      */
     getNewGameData: function(reqBody) {
         return {
-            player1: reqBody.player1,
+            player1: reqBody.decodedToken.username,
             player2: reqBody.player2,
             fieldWidth: reqBody.fieldWidth || undefined,
             fieldHeight: reqBody.fieldHeight || undefined
@@ -225,7 +225,7 @@ GameRepository = {
     },
 
     /**
-     * extracts the x/y coordinate and the username from the given reqBody object
+     * extracts the x/y coordinate and the token-username from the given reqBody object
      * and combines it with the given gameId to a return object
      *
      * @author Julian Mollik <jule@creative-coding.net>
@@ -238,7 +238,7 @@ GameRepository = {
         return {
             x: +reqBody.x, // parse to int
             y: +reqBody.y, // parse to int
-            username: reqBody.username,
+            username: reqBody.decodedToken.username,
             gameId: gameId
         };
     }

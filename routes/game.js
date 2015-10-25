@@ -119,6 +119,7 @@ router.route('/')
         var newGameData = GameRepository.getNewGameData(req.body),
             gameModel = mongoose.model('Game');
 
+        /*
         if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ newGameData.player1, newGameData.player2 ])) {
             ErrorHelper.sendErrorResponse(res, {
                 code: 403,
@@ -127,6 +128,7 @@ router.route('/')
             });
             return;
         }
+        /**/
 
         GameRepository.validateNewGameData(newGameData).then(function() {
             // resolve callback
@@ -173,6 +175,7 @@ router.route('/:gameId')
         var moveData = GameRepository.getMoveData(req.body, req.gameId),
             errorData;
 
+        /*
         if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ moveData.username ])) {
             ErrorHelper.sendErrorResponse(res, {
                 code: 403,
@@ -181,6 +184,7 @@ router.route('/:gameId')
             });
             return;
         }
+        /**/
 
         GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
             // resolve callback
@@ -285,6 +289,7 @@ router.route('/:gameId/forfeit')
         var moveData = GameRepository.getMoveData(req.body, req.gameId),
             otherPlayer;
 
+        /*
         if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ moveData.username ])) {
             ErrorHelper.sendErrorResponse(res, {
                 code: 403,
@@ -293,6 +298,7 @@ router.route('/:gameId/forfeit')
             });
             return;
         }
+        /**/
 
         GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
             // resolve callback

@@ -116,16 +116,15 @@ Response
 ---
 **🔐 DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(not implemented yet)
 ### Endpoint GAME
-**🔐 POST /game** creates a new game for `<usernamePlayer1>` and `<usernamePlayer2>` with the dimensions of `<fieldWidth>` &times; `<fieldHeight>` (optional)
+**🔐 POST /game** creates a new game for the *token username* as "player1" and `<usernamePlayer2>` as "player2" with the dimensions of `<fieldWidth>` &times; `<fieldHeight>` (optional)
 ```
 Payload
 {
-    "player1": "<usernamePlayer1>",
     "player2": "<usernamePlayer2>",
     "fieldWidth": <custom-width-of-the-field>, // Number (default is 10)
     "fieldHeight": <custom-height-of-the-field> // Number (default is 10)
 }
-Example {"player1": "spieler 1", "player2": "spieler 2", "fieldWidth": 10, "fieldHeight": 10}
+Example {"player2": "spieler 2", "fieldWidth": 10, "fieldHeight": 10}
 ```
 ```
 Response
@@ -146,7 +145,7 @@ Response
 }
 ```
 ---
-**🔐 GET /game/challengee** lists all games in which the token username is "player2" ("he or she was challenged") and the status is "prestart" (meaning the challange has not been accepted yet)
+**🔐 GET /game/challengee** lists all games in which the *token username* is "player2" ("he or she was challenged") and the status is "prestart" (meaning the challange has not been accepted yet)
 ```
 Response
 {
@@ -169,7 +168,7 @@ Response
 }
 ```
 ---
-**🔐 GET /game/challenger** lists all games in which the token username is "player1" ("he or she challenged somebody") and the status is "prestart" (meaning the challangee has not accepted yet)
+**🔐 GET /game/challenger** lists all games in which the *token username* is "player1" ("he or she challenged somebody") and the status is "prestart" (meaning the challangee has not accepted yet)
 ```
 Response
 {
@@ -214,15 +213,14 @@ Response
 }
 ```
 ---
-**🔐 PUT /game/`<gameId>`** puts a piece at the coordinate `<x coordinate>`/`<y coordinate>` for the username `<theUsername>` in the game with the id `<gameId>`
+**🔐 PUT /game/`<gameId>`** puts a piece at the coordinate `<x coordinate>`/`<y coordinate>` for the *token username* in the game with the id `<gameId>`
 ```
 Payload
 {
     "x": "<x coordinate>",
-    "y": "<y coordinate>",
-    "username": "<theUsername>"
+    "y": "<y coordinate>"
 }
-Example {"x": "4", "y": "3", "username": "spieler 1"}
+Example {"x": "4", "y": "3"}
 ```
 ```
 Response
@@ -243,13 +241,9 @@ Response
 }
 ```
 ---
-**🔐 PUT /game/`<gameId>`/forfeit** forfeits the game with the id `<gameId>` for the player with the username `<theUsername>`
+**🔐 PUT /game/`<gameId>`/forfeit** forfeits the game with the id `<gameId>` for the player with for the *token username*
 ```
-Payload
-{
-    "username": "<theUsername>"
-}
-Example {"username": "spieler 1"}
+Payload (none)
 ```
 ```
 Response

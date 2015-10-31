@@ -20,5 +20,8 @@ module.exports = {
     playerListColumn: 'score',
     playerListDirection: 'desc',
     playerListWhitelistValue: ['score', 'created_at', 'name', 'username'],
-    playerListWhitelistOrder: ['asc', 'desc']
+    playerListWhitelistOrder: ['asc', 'desc'],
+
+    gameListWhitelistValue: ['player1', 'player2', 'created_at', 'status'],
+    gameListWhitelistOrder: ['asc', 'desc']
 };

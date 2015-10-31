@@ -116,13 +116,13 @@ Response
 ---
 **🔐 DELETE /register`<playerId>`** deletes the player with the id `<playerId>`(⚠ not implemented yet)
 ### Endpoint PLAYER
-**🔓 GET /player/available** lists all players _not_ in a game with default offset, default limit, and default sorting
+**🔐 GET /player/available** lists all players _not_ in a game with default offset, default limit, and default sorting
 
-**🔓 GET /player/available/limit/`<limit-value>`** lists all players _not_ in a game with limit `<limit-value>`, default offset and default sorting (⚠ not stable yet)
+**🔐 GET /player/available/limit/`<limit-value>`** lists all players _not_ in a game with limit `<limit-value>`, default offset and default sorting (⚠ not stable yet)
 
-**🔓 GET /player/available/limit/`<limit-value>`/offset/`<offset-value>`** lists all players _not_ in a game with limit `<limit-value>`, offset `<offset-value>`, and default sorting (⚠ not stable yet)
+**🔐 GET /player/available/limit/`<limit-value>`/offset/`<offset-value>`** lists all players _not_ in a game with limit `<limit-value>`, offset `<offset-value>`, and default sorting (⚠ not stable yet)
 
-**🔓 GET /player/available/limit/`<limit-value>`/offset/`<offset-value>`/sort/`<sort-column>`/`<sort-direction>`** lists all players _not_ in a game with limit `<limit-value>`, offset `<offset-value>` sorted by `<sort-column>` in direction `<sort-direction>` (can be `asc` or `desc`) (⚠ not stable yet)
+**🔐 GET /player/available/limit/`<limit-value>`/offset/`<offset-value>`/sort/`<sort-column>`/`<sort-direction>`** lists all players _not_ in a game with limit `<limit-value>`, offset `<offset-value>` sorted by `<sort-column>` in direction `<sort-direction>` (can be `asc` or `desc`) (⚠ not stable yet)
 ```
 Response
 {

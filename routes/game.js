@@ -10,6 +10,7 @@ var express = require('express'),
     ErrorHelper = require('../helper/error'),
     AuthHelper = require('../helper/auth'),
     config = require('../config/config'),
+    constants = require('../config/constants'),
     saveGame;
 
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -306,7 +307,8 @@ router.route('/:gameId/forfeit')
             // forfeit game
             game.forfeit(moveData);
 
-            otherPlayer = game.usernameToPlayerX(moveData.username) === 'player1' ? 'player2' : 'player1';
+            otherPlayer =
+                game.usernameToPlayerX(moveData.username) === constants.player1 ? constants.player2 : constants.player1;
 
             PlayerRepository.getPlayerByUsername(game[otherPlayer]).then(function(player) {
                 // resolve callback

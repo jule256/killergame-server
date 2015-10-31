@@ -1,5 +1,3 @@
-/* jshint node: true */
-
 'use strict';
 
 var express = require('express'),
@@ -7,12 +5,9 @@ var express = require('express'),
     mongoose = require('mongoose'), //mongo connection
     bodyParser = require('body-parser'), //parses information from POST
     methodOverride = require('method-override'), //used to manipulate POST
-    Promise = require('bluebird'),
-    Jwt = require('jsonwebtoken'), // used to create, sign, and verify tokens
     PlayerRepository = require('../repository/player'),
     ErrorHelper = require('../helper/error'),
-    AuthHelper = require('../helper/auth'),
-    config = require('../config/config');
+    AuthHelper = require('../helper/auth');
 
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(methodOverride(function(req, res) {
@@ -34,7 +29,7 @@ router.route('/')
             res.format({
                 json: function() {
                     res.json({
-                        token: AuthHelper.createToken(player.username, player.playerId, player.password)
+                        token: AuthHelper.createToken(player.username, player.password, player.playerId)
                     });
                 }
             });

@@ -14,6 +14,7 @@ var db = require('./model/db'), // sets up database connection
 
 var routes = require('./routes/index'),
     register = require('./routes/register'),
+    player = require('./routes/player'),
     game = require('./routes/game'),
     login = require('./routes/login'),
     ping = require('./routes/ping'),
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/register', register);
+app.use('/player', player);
 app.use('/game', game);
 app.use('/login', login);
 app.use('/ping', ping);

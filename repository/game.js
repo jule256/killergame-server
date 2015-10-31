@@ -2,6 +2,8 @@
 
 var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
+    config = require('../config/config'),
+    constants = require('../config/constants'),
     GameRepository;
 
 /**
@@ -35,6 +37,33 @@ GameRepository = {
     getBlacklistExcludeString: function() {
         return '-' + blacklist.join(' -');
     },
+
+    /**
+     * takes the given sort parameters, checks them for validity and returns them as either a
+     * default sort object (if validation failed) or tranforms them to a mongoos query usable
+     * object and returns that
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @private
+     * @param column
+     * @param direction
+     * @returns {object}
+     */
+    getOrderbyObject: function(column, direction) {
+        var sortObj = {};
+
+        if (config.gameListWhitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
+            config.gameListWhitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
+            return {
+                score: -1
+            };
+        }
+
+        sortObj[column] = direction.toLowerCase() === 'asc' ? 1 : -1;
+
+        return sortObj;
+    },
+
     /**
      * resolves with the game with the given gameId or rejects with an error if something went wrong
      *
@@ -77,7 +106,7 @@ GameRepository = {
     },
 
     /**
-     * resolves with all games where the given username is playerX (being "player1" or "player") and the
+     * resolves with all games where the given username is playerX (being "player1" or "player2") and the
      * status is "prestart"
      *
      * @author Julian Mollik <jule@creative-coding.net>
@@ -92,7 +121,7 @@ GameRepository = {
                 status: 'prestart'
             };
         return new Promise(function (resolve, reject) {
-            if (playerX !== 'player1' && playerX !== 'player2') {
+            if (playerX !== constants.player1 && playerX !== constants.player2) {
                 reject();
             }
             where[playerX] = username;
@@ -241,6 +270,42 @@ GameRepository = {
             username: reqBody.decodedToken.username,
             gameId: gameId
         };
+    },
+
+    /**
+     * queries the game table with the given limit, offset and sort paramters and resolves with a
+     * sanitized array with game-objects or rejects with an error, if any
+     *
+     * the games can be restricted with the where parameter
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {object} params
+     * @param {object} [where]
+     * @returns {bluebird|exports|module.exports}
+     */
+    getGames: function(params, where) {
+        var sortObj = this.getOrderbyObject(params.column, params.direction),
+            blacklistExclude = this.getBlacklistExcludeString(),
+            where = where || {}; // jshint ignore:line
+
+        return new Promise(function(resolve, reject) {
+            mongoose.model('Game').find(where, blacklistExclude, {
+                limit: params.limit,
+                skip: params.offset,
+                sort: sortObj
+            }, function (err, games) {
+                if (err) {
+                    reject({
+                        text: 'there was an error querying the database',
+                        key: 'database_0001'
+                    });
+                }
+                else {
+                    resolve(games);
+                }
+            });
+        });
     }
 };
 

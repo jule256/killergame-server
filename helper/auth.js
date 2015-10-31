@@ -63,10 +63,10 @@ AuthHelper = {
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {String} username
-     * @param {String} playerId
      * @param {String} password
+     * @param {String} [playerId]
      */
-    createToken: function(username, playerId, password) {
+    createToken: function(username, password, playerId) {
         return Jwt.sign({
             username: username,
             playerId: playerId,

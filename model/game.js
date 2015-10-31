@@ -4,16 +4,17 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    Shortid = require('shortid');
+    Shortid = require('shortid'),
+    constants = require('../config/constants');
 
 var gameSchema = new mongoose.Schema({
     gameId: { type: String, default: Shortid.generate() },
     field: String, // json string
     fieldWidth: { type: Number, default: 10 },
     fieldHeight: { type: Number, default: 10 },
-    activePlayer: { type: String, default: 'player1' }, // magic strings?
-    status: { type: String, default: 'prestart' }, // magic strings?
-    result: { type: String, default: '' }, // magic strings?
+    activePlayer: { type: String, default: constants.player1 },
+    status: { type: String, default: constants.status.prestart },
+    result: { type: String, default: '' }, // @todo set default value?
     created_at: { type: Date, default: Date.now },
     player1: String, // username of player 1
     player2: String, // username of player 2
@@ -53,7 +54,7 @@ gameSchema.methods.makeMove = function makeMove(moveData) {
     this.moveCount++; // increase number of moves
 
     // @todo think of best place to change from "prestart" to "inprogress", here it is set during every move
-    this.status = 'inprogress'; // magic strings?
+    this.status = constants.status.inprogress;
 };
 
 /**
@@ -64,7 +65,7 @@ gameSchema.methods.makeMove = function makeMove(moveData) {
  * @returns {string} either 'x' for player1 or 'o' for player2
  */
 gameSchema.methods.getPiece = function getPiece() {
-    return this.activePlayer === 'player1' ? 'x' : 'o'; // magic strings?
+    return this.activePlayer === constants.player1 ? constants.token.player1 : constants.token.player2;
 };
 
 /**
@@ -74,7 +75,7 @@ gameSchema.methods.getPiece = function getPiece() {
  * @public
  */
 gameSchema.methods.changeActivePlayer = function changeActivePlayer() {
-    this.activePlayer = this.activePlayer === 'player1' ? 'player2' : 'player1'; // magic strings?
+    this.activePlayer = this.activePlayer === constants.player1 ? constants.player2 : constants.player1;
 };
 
 /**
@@ -91,7 +92,7 @@ gameSchema.methods.changeActivePlayer = function changeActivePlayer() {
  */
 gameSchema.methods.validateMoveData = function validateMoveData(moveData) {
 
-    if (this.status === 'finished') {
+    if (this.status === constants.status.finished) {
         this.errorText = 'this game is already over';
         this.errorKey = 'game_0003';
         return false;
@@ -126,7 +127,7 @@ gameSchema.methods.validateMoveData = function validateMoveData(moveData) {
  * @returns {boolean}
  */
 gameSchema.methods.validateMoveDataPlayer = function validateMoveDataPlayer(username) {
-    var player = this.player1 === username ? 'player1' : 'player2';
+    var player = this.player1 === username ? constants.player1 : constants.player2;
     return this.activePlayer === player;
 };
 
@@ -190,7 +191,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 0, -1, 0);
     if (setCoord.length === 5) {
-        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
         return true;
     }
 
@@ -198,7 +199,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 0, 1, 0, -1);
     if (setCoord.length === 5) {
-        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
         return true;
     }
 
@@ -206,7 +207,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 1, -1, -1);
     if (setCoord.length === 5) {
-        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
         return true;
     }
 
@@ -214,7 +215,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     setCoord = resetSetCoord;
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, -1, 1, 1, -1);
     if (setCoord.length === 5) {
-        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord); // magic strings?
+        this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
         return true;
     }
 
@@ -322,8 +323,8 @@ gameSchema.methods.checkForWinDirection2 =
  * @param setCoord
  */
 gameSchema.methods.finishGame = function finishGame(result, setCoord) {
-    if (this.status !== 'finished') {
-        this.status = 'finished'; // magic strings?
+    if (this.status !== constants.status.finished) {
+        this.status = constants.status.finished;
         this.result = result;
         if (typeof setCoord !== 'undefined') {
             this.setCoord = setCoord; // store the winning set of coordinates
@@ -340,7 +341,7 @@ gameSchema.methods.finishGame = function finishGame(result, setCoord) {
  * @returns {String}
  */
 gameSchema.methods.usernameToPlayerX = function usernameToPlayerX(username) {
-    return this.player1 === username ? 'player1' : 'player2';
+    return this.player1 === username ? constants.player1 : constants.player2;
 };
 
 /**
@@ -352,7 +353,7 @@ gameSchema.methods.usernameToPlayerX = function usernameToPlayerX(username) {
  */
 gameSchema.methods.checkForDraw = function checkForDraw() {
     if (+this.moveCount === +(this.fieldHeight * this.fieldWidth)) {
-        this.finishGame('draw'); // magic strings?
+        this.finishGame(constants.result.draw);
         return true;
     }
     return false;
@@ -366,7 +367,7 @@ gameSchema.methods.checkForDraw = function checkForDraw() {
  * @param {object} moveData
  */
 gameSchema.methods.forfeit = function forfeit(moveData) {
-    this.finishGame('forfeit_' + this.usernameToPlayerX(moveData.username)); // magic strings?
+    this.finishGame('forfeit_' + this.usernameToPlayerX(moveData.username));
 };
 
 /**

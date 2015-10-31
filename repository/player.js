@@ -4,6 +4,8 @@ var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
     md5 = require('md5'),
     config = require('../config/config'),
+    constants = require('../config/constants'),
+    GameRepository = require('../repository/game'),
     PlayerRepository;
 
 /**
@@ -442,15 +444,38 @@ PlayerRepository = {
      * queries the player table with the given limit, offset and sort paramters and resolves with a
      * sanitized array with player-objects or rejects with an error, if any
      *
+     * if the param "availble" is passed and true, only players currently NOT in a game will be queried
+     *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {object} params
+     * @param {boolean} [available]
      * @returns {bluebird|exports|module.exports}
      */
-    getPlayers: function(params) {
+    getPlayers: function(params, available) {
         var sortObj = this.getOrderbyObject(params.column, params.direction),
+            available = available || false, // jshint ignore:line
             blacklistExclude = this.getBlacklistExcludeString();
+        if (available) {
+            return this.getAvailablePlayers(params, sortObj, blacklistExclude);
+        }
+        else {
+            return this.getAllPlayers(params, sortObj, blacklistExclude);
+        }
+    },
 
+    /**
+     * queries the player table with the given limit, offset and sort paramters and resolves with a
+     * sanitized array with ALL player-objects or rejects with an error, if any
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @private
+     * @param {object} params
+     * @param {object} sortObj
+     * @param {string} blacklistExclude
+     * @returns {bluebird|exports|module.exports}
+     */
+    getAllPlayers: function(params, sortObj, blacklistExclude) {
         return new Promise(function(resolve, reject) {
             mongoose.model('Player').find({}, blacklistExclude, {
                 limit: params.limit,
@@ -468,6 +493,78 @@ PlayerRepository = {
                 }
             });
         });
+    },
+
+    /**
+     * queries the player table with the given limit, offset and sort paramters and resolves with a
+     * sanitized array with all player-objects NOT in a game or rejects with an error, if any
+     *
+     * @author Julian Mollik <jule@creative-coding.net
+     * @private
+     * @param {object} params
+     * @param {object} sortObj
+     * @param {string} blacklistExclude
+     * @returns {bluebird|exports|module.exports}
+     */
+    getAvailablePlayers: function(params, sortObj, blacklistExclude) {
+        var gameParams = { limit: undefined, offset: 0, column: 'status', direction: 'asc'},
+            i,
+            availablePlayers = [],
+            gameWhere = {
+                status: constants.status.inprogress
+            };
+
+        return new Promise(function(resolve, reject) {
+            GameRepository.getGames(gameParams, gameWhere).then(function (games) {
+                // resolve callback
+                PlayerRepository.getAllPlayers(params, sortObj, blacklistExclude).then(function (players) {
+                    // resolve callback
+
+                    // remove all players which are in a game right now
+                    for (i = 0; i < players.length; i++) {
+                        if (!PlayerRepository.isPlayerInGame(players[i].username, games)) {
+                            // player is NOT in a game
+                            availablePlayers.push(players[i]);
+                        }
+                    }
+
+                    resolve({
+                        players: availablePlayers
+                    });
+                }, function (error) {
+                    // error callback
+                    reject({
+                        text: 'there was an error querying the database',
+                        key: 'database_0001'
+                    });
+                });
+            }, function (error) {
+                // error callback
+                reject({
+                    text: 'there was an error querying the database',
+                    key: 'database_0001'
+                });
+            });
+        });
+    },
+
+    /**
+     * returns true if the given username is in any of the given games (either player1 or player2), otherwise false
+     *
+     * @author Julian Mollik <jule@creative-coding.net
+     * @private
+     * @param {string} username
+     * @param {Array} games
+     * @returns {boolean}
+     */
+    isPlayerInGame: function(username, games) {
+        var i;
+        for (i = 0; i < games.length; i++) {
+            if (games[i].player1 === username || games[i].player2 === username) {
+                return true;
+            }
+        }
+        return false;
     }
 };
 

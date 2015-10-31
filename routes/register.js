@@ -123,7 +123,6 @@ router.route('/')
         });
     });
 
-//
 router.route('/limit/:limit(\\d+)?')
     // GETLIST all players with offset parameter
     .get(function(req, res, next) {

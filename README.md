@@ -8,7 +8,7 @@ A detailed description of the available routes can be found in the [routes/READM
 | :------------------------------------------------------------|:-:|---------------------------------------------------------------------------:|
 | Login with `POST /login`                                     |   | Login with `POST /login`                                                   |
 | list all available players with `GET /player/available`      |   |                                                                            |
-| challange _player2_ with `POST /game`                        |   |                                                                            |
+| challenge _player2_ with `POST /game`                        |   |                                                                            |
 | list all games _player1_ is the challenger with `GET /game/challenger` | | list all games _player2_ is challenged with `GET /game/challengee` |
 |                                                              |   | accept a challenge with `PUT /game/<gameId>/accept`                        |
 | list all accepted challenges with `GET /game/accepted`       |   |                                                                            |

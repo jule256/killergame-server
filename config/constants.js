@@ -4,13 +4,15 @@ module.exports = {
 
     // game status constants
     status: {
+        prestart: 'prestart',
+        ready: 'ready',
         inprogress: 'inprogress',
-        finished: 'finished',
-        prestart: 'prestart'
+        finished: 'finished'
     },
 
     // game result constants
     result: {
+        'default': '',
         draw: 'draw',
         win_player1: 'win_player1',
         win_player2: 'win_player2',
@@ -25,6 +27,6 @@ module.exports = {
     // token constants
     token: {
         player1: 'x',
-        player2: 'o',
+        player2: 'o'
     }
 };

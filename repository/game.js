@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
+    merge = require('merge'), // to merge two objects
     config = require('../config/config'),
     constants = require('../config/constants'),
     GameRepository;
@@ -70,16 +71,15 @@ GameRepository = {
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {number} gameId
-     * @param {string} status
+     * @param {object} [where]
      * @param {string} [username]
      * @returns {bluebird|exports|module.exports}
      */
-    getGame: function(gameId, status, username) {
+    getGame: function(gameId, where, username) {
+        var where = merge(where, { gameId: gameId }); // jshint ignore:line
+
         return new Promise(function (resolve, reject) {
-            mongoose.model('Game').findOne({
-                gameId: gameId,
-                status: {'$ne': status}
-            }, function (err, game) {
+            mongoose.model('Game').findOne(where, function (err, game) {
                 if (!game) {
                     reject({
                         text: 'game with id "' + gameId + '" does not exist',
@@ -107,18 +107,19 @@ GameRepository = {
 
     /**
      * resolves with all games where the given username is playerX (being "player1" or "player2") and the
-     * status is "prestart"
+     * status is "ready" (if parameter accepted is true) or "prestart" (if parameter accepted is false)
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {String} username
      * @param {String} playerX
+     * @param {Boolean} [accepted]
      * @returns {bluebird|exports|module.exports}
      */
-    getChallenges: function(username, playerX) {
+    getChallenges: function(username, playerX, accepted) {
         var blacklistExclude = this.getBlacklistExcludeString(),
             where = {
-                status: 'prestart'
+                status: accepted ? constants.status.ready : constants.status.prestart
             };
         return new Promise(function (resolve, reject) {
             if (playerX !== constants.player1 && playerX !== constants.player2) {
@@ -136,7 +137,6 @@ GameRepository = {
                     resolve(games);
                 }
             });
-
         });
     },
 
@@ -230,7 +230,8 @@ GameRepository = {
             gameModel.create(gameData, function (err, game) {
                 if (err) {
                     reject({
-                        text: 'could not create new game'
+                        text: 'could not create new game',
+                        key: 'game_0014'
                     });
                 }
                 else {
@@ -241,7 +242,8 @@ GameRepository = {
                     game.save(function (err) {
                         if (err) {
                             reject({
-                                text: 'could not initialize new game'
+                                text: 'could not initialize new game',
+                                key: 'game_0015'
                             });
                         }
                         else {

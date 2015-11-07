@@ -10,7 +10,7 @@ A detailed description of the available routes can be found in the [routes/READM
 | list all available players with `GET /player/available`      |   |                                                                            |
 | challange _player2_ with `POST /game`                        |   |                                                                            |
 | list all games _player1_ is the challenger with `GET /game/challenger` | | list all games _player2_ is challenged with `GET /game/challengee` |
-|                                                              |   | accept a challenge with **@todo**                                          |
+|                                                              |   | accept a challenge with `PUT /game/<gameId>/accept`                        |
 | list all accepted challenges with `GET /game/accepted`       |   |                                                                            |
 | make move with `PUT /game/<gameId>`                          | ↔ | make move with `PUT /game/<gameId>`                                        |
 |  _player1_ wins                                      | **End of game A** | _player2_ wins                                                     |

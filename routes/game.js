@@ -72,7 +72,7 @@ router.route('/challengee')
     // GET /challenged returns all games in state "prestart" with player as player2
     .get(function(req, res, next) {
         var username = req.decodedToken.username;
-        GameRepository.getChallenges(username, 'player2').then(function(games) {
+        GameRepository.getChallenges(username, constants.player2).then(function(games) {
             // resolve callback
             res.format({
                 json: function() {
@@ -91,7 +91,26 @@ router.route('/challenger')
     // GET /challenged returns all games in state "prestart" with player as player1
     .get(function(req, res, next) {
         var username = req.decodedToken.username;
-        GameRepository.getChallenges(username, 'player1').then(function(games) {
+        GameRepository.getChallenges(username, constants.player1).then(function(games) {
+            // resolve callback
+            res.format({
+                json: function() {
+                    res.json({
+                        games: games
+                    });
+                }
+            });
+        }, function(error) {
+            // error callback
+            ErrorHelper.sendErrorResponse(res, error);
+        });
+    });
+
+router.route('/accepted')
+    // GET /accepted returns all games in state "ready" with player as player1
+    .get(function(req, res, next) {
+        var username = req.decodedToken.username;
+        GameRepository.getChallenges(username, constants.player1, true).then(function (games) {
             // resolve callback
             res.format({
                 json: function() {
@@ -120,17 +139,6 @@ router.route('/')
         var newGameData = GameRepository.getNewGameData(req.body),
             gameModel = mongoose.model('Game');
 
-        /*
-        if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ newGameData.player1, newGameData.player2 ])) {
-            ErrorHelper.sendErrorResponse(res, {
-                code: 403,
-                text: 'cannot create game for other players',
-                key: 'game_0010'
-            });
-            return;
-        }
-        /**/
-
         GameRepository.validateNewGameData(newGameData).then(function() {
             // resolve callback
             GameRepository.createGame(gameModel, newGameData).then(function(game) {
@@ -151,8 +159,9 @@ router.route('/')
 router.route('/:gameId')
     // GET returns the game with the given id
     .get(function(req, res) {
-        var gameId = req.gameId;
-        GameRepository.getGame(gameId, 'finished').then(function(game) {
+        var gameId = req.gameId,
+            where = { status: { '$ne': 'finished' }};
+        GameRepository.getGame(gameId, where).then(function(game) {
             // resolve callback
             if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ game.player1, game.player2 ])) {
                 ErrorHelper.sendErrorResponse(res, {
@@ -174,20 +183,10 @@ router.route('/:gameId')
     // PUT to set a game piece
     .put(function(req, res) {
         var moveData = GameRepository.getMoveData(req.body, req.gameId),
-            errorData;
+            errorData,
+            where = { status: { '$ne': 'finished' }};
 
-        /*
-        if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ moveData.username ])) {
-            ErrorHelper.sendErrorResponse(res, {
-                code: 403,
-                text: 'cannot make move for game of other players',
-                key: 'game_0012'
-            });
-            return;
-        }
-        /**/
-
-        GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
+        GameRepository.getGame(moveData.gameId, where, moveData.username).then(function(game) {
             // resolve callback
 
             // validation of move data
@@ -288,20 +287,10 @@ router.route('/:gameId/forfeit')
     // PUT to forfeit the game
     .put(function(req, res) {
         var moveData = GameRepository.getMoveData(req.body, req.gameId),
-            otherPlayer;
+            otherPlayer,
+            where = { status: { '$ne': 'finished' }};
 
-        /*
-        if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ moveData.username ])) {
-            ErrorHelper.sendErrorResponse(res, {
-                code: 403,
-                text: 'cannot forfeit game of other players',
-                key: 'game_0013'
-            });
-            return;
-        }
-        /**/
-
-        GameRepository.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
+        GameRepository.getGame(moveData.gameId, where, moveData.username).then(function(game) {
             // resolve callback
 
             // forfeit game
@@ -325,6 +314,34 @@ router.route('/:gameId/forfeit')
                     // continue code-flow at saveGame()
                     saveGame(game, moveData, res);
                 });
+            }, function(error) {
+                // error callback
+                ErrorHelper.sendErrorResponse(res, error);
+            });
+        }, function(error) {
+            // error callback
+            ErrorHelper.sendErrorResponse(res, error);
+        });
+    });
+
+router.route('/:gameId/accept')
+    // PUT lets the challengee accept the challenge and start the actual game
+    .put(function(req, res) {
+        var username = req.decodedToken.username,
+            where = { status: 'prestart' };
+
+        GameRepository.getGame(req.gameId, where, username).then(function(game) {
+            // resolve callback
+
+            console.log('getGame() resolve:', game);
+
+            game.acceptChallenge(username).then(function() {
+                // resolve callback
+
+                console.log('acceptChallenge() resolve');
+
+                // continue code-flow at saveGame()
+                saveGame(game, {}, res);
             }, function(error) {
                 // error callback
                 ErrorHelper.sendErrorResponse(res, error);

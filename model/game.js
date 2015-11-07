@@ -4,6 +4,7 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+    Promise = require('bluebird'), // to use promises
     Shortid = require('shortid'),
     constants = require('../config/constants');
 
@@ -14,7 +15,7 @@ var gameSchema = new mongoose.Schema({
     fieldHeight: { type: Number, default: 10 },
     activePlayer: { type: String, default: constants.player1 },
     status: { type: String, default: constants.status.prestart },
-    result: { type: String, default: '' }, // @todo set default value?
+    result: { type: String, default: constants.result.default },
     created_at: { type: Date, default: Date.now },
     player1: String, // username of player 1
     player2: String, // username of player 2
@@ -53,7 +54,7 @@ gameSchema.methods.makeMove = function makeMove(moveData) {
 
     this.moveCount++; // increase number of moves
 
-    // @todo think of best place to change from "prestart" to "inprogress", here it is set during every move
+    // @todo think of best place to change from "ready" to "inprogress", here it is set during every move
     this.status = constants.status.inprogress;
 };
 
@@ -368,6 +369,43 @@ gameSchema.methods.checkForDraw = function checkForDraw() {
  */
 gameSchema.methods.forfeit = function forfeit(moveData) {
     this.finishGame('forfeit_' + this.usernameToPlayerX(moveData.username));
+};
+
+/**
+ * rejects if the given username is NOT challengee of this game or the game is not in state "prestart"
+ * otherwise sets the status of this game to "ready" (and thereby accepting the challenge for userame) and resolves
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @public
+ * @param {string} username
+ * @returns {bluebird|exports|module.exports}
+ */
+gameSchema.methods.acceptChallenge = function(username) {
+    var scope = this;
+
+    return new Promise(function(resolve, reject) {
+        // check if given username is challengee of this game (has to be player2)
+        if (scope.player2 !== username) {
+            reject({
+                text: 'cannot accept challenge of game if user is not the challengee',
+                key: 'game_0016'
+            });
+            return;
+        }
+
+        // check if the game is in status "prestart"
+        if (scope.status !== constants.status.prestart) {
+            reject({
+                text: 'cannot accept challenge of game if status is "prestart"',
+                key: 'game_0017'
+            });
+            return;
+        }
+
+        scope.status = constants.status.ready;
+
+        resolve();
+    });
 };
 
 /**

@@ -329,6 +329,20 @@ Response
 ```
 ---
 
+### Endpoint PING
+**🔓 GET /ping** is a ping route to keep the server alive
+```
+Response
+{
+    pong: true,
+    ip: <the request's ip adress>,
+    time: <the current unix timestamp>
+}
+```
+---
+**🔓 GET /dev** is a development route you can use to debug/test things
+---
+
 ### Endpoint DEV
 **🔓 POST /dev** is a development route you can use to debug/test things
 ```

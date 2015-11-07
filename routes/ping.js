@@ -19,7 +19,6 @@ router.use(methodOverride(function(req, res) {
 router.route('/')
     // GET
     .get(function(req, res, next) {
-
         res.format({
             json: function() {
                 res.json({

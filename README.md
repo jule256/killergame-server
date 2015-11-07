@@ -13,9 +13,9 @@ A detailed description of the available routes can be found in the [routes/READM
 |                                                              |   | accepts a challenge with **@todo**                                         |
 | list all accepted challenges with `GET /accepted`            |   |                                                                            |
 | make move with `PUT /game/<gameId>`                          | ↔ | makes move with `PUT /game`/<gameId>                                       |
-|  _player1_ wins                                      | * End of game A* | _player2_ wins                                                    |
-| _player1_ gives up with `PUT /game/<gameId>/forfeit` | * End of game B* | _player2_ gives up with `PUT /game/<gameId>/forfeit`              |
-| the game ends draw                                   | * End of game C* | the game ends draw                                                |
+|  _player1_ wins                                      | *End of game A* | _player2_ wins                                                    |
+| _player1_ gives up with `PUT /game/<gameId>/forfeit` | *End of game B* | _player2_ gives up with `PUT /game/<gameId>/forfeit`              |
+| the game ends draw                                   | *End of game C* | the game ends draw                                                |
 
 ## sources
 

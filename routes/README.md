@@ -335,8 +335,8 @@ Response
 Response
 {
     pong: true,
-    ip: <the request's ip adress>,
-    time: <the current unix timestamp>
+    ip: "<the request's ip adress>",
+    time: "<the current unix timestamp>"
 }
 ```
 ---

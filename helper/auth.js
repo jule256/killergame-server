@@ -41,6 +41,7 @@ AuthHelper = {
                     //    "exp": <valid until timestamp>
                     // }
                     req.decodedToken = decoded;
+
                     // token is valid, go to next middleware
                     next();
                 }

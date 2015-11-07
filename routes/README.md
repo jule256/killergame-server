@@ -217,6 +217,29 @@ Response
 }
 ```
 ---
+**🔐 GET /game/accepted** lists all games in which the *token username* is "player1" ("he or she challenged somebody") and the status is "ready" (meaning the challangee has accepted the challenge)
+```
+Response
+{
+    "games": [
+        {
+            "player1": "<usernamePlayer1>", // identical to the username encoded in the token
+            "player2": "<usernamePlayer2>",
+            "field": "[<field>]", // JSON stringified array
+            "moveCount": 0,
+            "setCoord": [],
+            "result": "",
+            "status": "ready",
+            "activePlayer": "<usernamePlayer1>",
+            "fieldHeight": 10,
+            "fieldWidth": 10,
+            "gameId": <gameId>
+        },
+        // further games skipped
+    ]
+}
+```
+---
 **🔐 GET /game** lists all games (⚠ not implemented yet)
 
 ---

@@ -1,5 +1,7 @@
 'use strict';
 
+var databaseConfig = require('./config.db');
+
 module.exports = {
 
     // hash for password storage
@@ -8,8 +10,8 @@ module.exports = {
     // hash for token creation and validation
     tokenHash: 'secretTokenOfTheKillergameServer',
 
-    // database connection details
-    database: 'mongodb://localhost:27017/killergame2',
+    // get database connection details
+    database: databaseConfig.getConnectionString(process.env.NODE_ENV),
 
     // application related settings
     scoreIncreaseDraw: 1,

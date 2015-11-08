@@ -12,7 +12,9 @@ A detailed description of the available routes can be found in the [routes/READM
 | list all games _player1_ is the challenger with `GET /game/challenger` | | list all games _player2_ is challenged with `GET /game/challengee` |
 |                                                              |   | accept a challenge with `PUT /game/<gameId>/accept`                        |
 | list all accepted challenges with `GET /game/accepted`       |   |                                                                            |
-| make move with `PUT /game/<gameId>`                          | ↔ | make move with `PUT /game/<gameId>`                                        |
+| make move with `PUT /game/<gameId>`                          | → | waiting _player1_'s move by querying `GET /game/<gameId>`                  |
+| ↑                                                            |   | ↓                                                                          |
+| waiting _player2_'s move by querying `GET /game/<gameId>     | ← | make move with `PUT /game/<gameId>`                                        |
 |  _player1_ wins                                      | **End of game A** | _player2_ wins                                                     |
 | _player1_ gives up with `PUT /game/<gameId>/forfeit` | **End of game B** | _player2_ gives up with `PUT /game/<gameId>/forfeit`               |
 | the game ends draw                                   | **End of game C** | the game ends draw                                                 |

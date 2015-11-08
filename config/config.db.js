@@ -18,6 +18,8 @@ ConfigDb = {
             ConfigDbMongolab;
         switch (environment) {
             case 'mongolab':
+                /* falls through */
+            case 'production':
                 try {
                     require.resolve(configDbMongolabPath);
                     ConfigDbMongolab = require(configDbMongolabPath);

@@ -1,9 +1,9 @@
 {
   "name": "killergame-server",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "NODE_ENV=development node ./bin/www"
   },
   "dependencies": {
     "bluebird": "^2.10.2",
@@ -17,10 +17,9 @@
     "md5": "^2.0.0",
     "merge": "^1.2.0",
     "method-override": "^2.3.1",
-    "mongoose": "^3.8.24",
+    "mongoose": "^4.2.4",
     "morgan": "~1.5.1",
     "reload": "^0.2.0",
-    "serve-favicon": "~2.2.0",
     "shortid": "^2.2.4"
   },
   "devDependencies": {

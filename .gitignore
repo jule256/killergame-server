@@ -33,4 +33,4 @@ node_modules
 temp.txt
 
 # mongolab database credentials (see config/README.md)
-config/config.db.mongolab.js
+# config/config.db.mongolab.js

@@ -16,6 +16,32 @@ var mongoose = require('mongoose'), // mongo connection
  */
 var blacklist = ['created_at', '__v', '_id'];
 
+/**
+ * takes the given sort parameters, checks them for validity and returns them as either a
+ * default sort object (if validation failed) or tranforms them to a mongoos query usable
+ * object and returns that
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @private
+ * @param column
+ * @param direction
+ * @returns {object}
+ */
+var getOrderbyObject = function(column, direction) {
+    var sortObj = {};
+
+    if (config.gameListWhitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
+        config.gameListWhitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
+        return {
+            score: -1
+        };
+    }
+
+    sortObj[column] = direction.toLowerCase() === 'asc' ? 1 : -1;
+
+    return sortObj;
+},
+
 GameRepository = {
     /**
      * returns the blacklist of the game model
@@ -37,32 +63,6 @@ GameRepository = {
      */
     getBlacklistExcludeString: function() {
         return '-' + blacklist.join(' -');
-    },
-
-    /**
-     * takes the given sort parameters, checks them for validity and returns them as either a
-     * default sort object (if validation failed) or tranforms them to a mongoos query usable
-     * object and returns that
-     *
-     * @author Julian Mollik <jule@creative-coding.net>
-     * @private
-     * @param column
-     * @param direction
-     * @returns {object}
-     */
-    getOrderbyObject: function(column, direction) {
-        var sortObj = {};
-
-        if (config.gameListWhitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
-            config.gameListWhitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
-            return {
-                score: -1
-            };
-        }
-
-        sortObj[column] = direction.toLowerCase() === 'asc' ? 1 : -1;
-
-        return sortObj;
     },
 
     /**
@@ -287,7 +287,7 @@ GameRepository = {
      * @returns {bluebird|exports|module.exports}
      */
     getGames: function(params, where) {
-        var sortObj = this.getOrderbyObject(params.column, params.direction),
+        var sortObj = getOrderbyObject(params.column, params.direction),
             blacklistExclude = this.getBlacklistExcludeString(),
             where = where || {}; // jshint ignore:line
 

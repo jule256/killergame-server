@@ -1,6 +1,3 @@
-// also possible to use statics, but I think I wanna keep statics in the repository
-// http://mongoosejs.com/docs/guide.html
-
 'use strict';
 
 var mongoose = require('mongoose'),

@@ -1,6 +1,3 @@
-// also possible to use statics, but I think I wanna keep statics in the repository
-// http://mongoosejs.com/docs/guide.html
-
 'use strict';
 
 var mongoose = require('mongoose'),
@@ -22,6 +19,17 @@ var gameSchema = new mongoose.Schema({
     setCoord: { type: Array, default: [] }, // where the winning set is stored
     moveCount: { type: Number, default: 0 } // contains the number of completed moves (needed for "draw-detection")
 });
+
+/**
+ * returns the 'character' of the current active player
+ *
+ * @author Julian Mollik <jule@creative-coding.net>
+ * @private
+ * @returns {string} either 'x' for player1 or 'o' for player2
+ */
+var getPiece = function(activePlayer) {
+    return activePlayer === constants.player1 ? constants.token.player1 : constants.token.player2;
+};
 
 /**
  * initializes this game by creating the game's field accordingly to the fieldHeight and fieldWidth
@@ -49,24 +57,13 @@ gameSchema.methods.initialize = function initialize() {
  */
 gameSchema.methods.makeMove = function makeMove(moveData) {
     var fieldObj = JSON.parse(this.field);
-    fieldObj[moveData.x][moveData.y] = this.getPiece();
+    fieldObj[moveData.x][moveData.y] = getPiece(this.activePlayer);
     this.field = JSON.stringify(fieldObj);
 
     this.moveCount++; // increase number of moves
 
     // @todo think of best place to change from "ready" to "inprogress", here it is set during every move
     this.status = constants.status.inprogress;
-};
-
-/**
- * returns the 'character' of the current active player
- *
- * @author Julian Mollik <jule@creative-coding.net>
- * @private
- * @returns {string} either 'x' for player1 or 'o' for player2
- */
-gameSchema.methods.getPiece = function getPiece() {
-    return this.activePlayer === constants.player1 ? constants.token.player1 : constants.token.player2;
 };
 
 /**
@@ -240,7 +237,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
 gameSchema.methods.checkForWinDirection1 =
     function checkForWinDirection1(startX, startY, setCoord, startModX, startModY, incrementModX, incrementModY) {
 
-    var piece = this.getPiece(), // is 'x' or 'o'
+    var piece = getPiece(this.activePlayer), // is 'x' or 'o'
         fieldObj = JSON.parse(this.field),
         x,
         y;
@@ -286,7 +283,7 @@ gameSchema.methods.checkForWinDirection1 =
 gameSchema.methods.checkForWinDirection2 =
     function checkForWinDirection2(startX, startY, setCoord, startModX, startModY, incrementModX, incrementModY) {
 
-    var piece = this.getPiece(), // is 'x' or 'o'
+    var piece = getPiece(this.activePlayer), // is 'x' or 'o'
         fieldObj = JSON.parse(this.field),
         x,
         y;

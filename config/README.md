@@ -28,7 +28,7 @@ module.exports = ConfigDB;
 ```
 ## start the app with specific environment
 Edit the [package.json](../package.json) and add the environment variable `NODE_ENV` with the value `mongolab` to the start script:
-```json
+```javascript
 {
   // [...]
   "scripts": {

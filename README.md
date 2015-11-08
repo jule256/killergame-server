@@ -4,20 +4,20 @@
 
 A detailed description of the available routes can be found in the [routes/README.md file](routes/README.md).
 
-| Player 1 (username _spieler1_)                               |   | Player 2 (username _spieler2_)                                             |
-| :------------------------------------------------------------|:-:|---------------------------------------------------------------------------:|
-| Login with `POST /login`                                     |   | Login with `POST /login`                                                   |
-| list all available players with `GET /player/available`      |   |                                                                            |
-| challenge _player2_ with `POST /game`                        |   |                                                                            |
-| list all games _player1_ is the challenger with `GET /game/challenger` | | list all games _player2_ is challenged with `GET /game/challengee` |
-|                                                              |   | accept a challenge with `PUT /game/<gameId>/accept`                        |
-| list all accepted challenges with `GET /game/accepted`       |   |                                                                            |
-| make move with `PUT /game/<gameId>`                          | → | waiting _player1_'s move by querying `GET /game/<gameId>`                  |
-| ↑                                                            |   | ↓                                                                          |
-| waiting _player2_'s move by querying `GET /game/<gameId>     | ← | make move with `PUT /game/<gameId>`                                        |
-|  _player1_ wins                                      | **End of game A** | _player2_ wins                                                     |
-| _player1_ gives up with `PUT /game/<gameId>/forfeit` | **End of game B** | _player2_ gives up with `PUT /game/<gameId>/forfeit`               |
-| the game ends draw                                   | **End of game C** | the game ends draw                                                 |
+| Player 1 (username _spieler1_)                               |   | Player 2 (username _spieler2_)                                               |
+| :------------------------------------------------------------|:-:|-----------------------------------------------------------------------------:|
+| Login with `POST /login`                                     |   | Login with `POST /login`                                                     |
+| list all available players with `GET /player/available`      |   |                                                                              |
+| challenge _spieler2_ with `POST /game`                       |   |                                                                              |
+| list all games _spieler1_ is the challenger with `GET /game/challenger` | | list all games _spieler2_ is challenged with `GET /game/challengee` |
+|                                                              |   | accept a challenge with `PUT /game/<gameId>/accept`                          |
+| list all accepted challenges with `GET /game/accepted`       |   |                                                                              |
+| make move with `PUT /game/<gameId>`                        | **→** | waiting _spieler1_'s move by querying `GET /game/<gameId>`                 |
+| **↑**                                                        |   | **↓**                                                                        |
+| waiting _spieler2_'s move by querying `GET /game/<gameId>` | **←** | make move with `PUT /game/<gameId>`                                        |
+|  _spieler1_ wins                                      | **End of game A** | _spieler2_ wins                                                     |
+| _spieler1_ gives up with `PUT /game/<gameId>/forfeit` | **End of game B** | _spieler2_ gives up with `PUT /game/<gameId>/forfeit`               |
+| the game ends draw                                    | **End of game C** | the game ends draw                                                  |
 
 ## sources
 

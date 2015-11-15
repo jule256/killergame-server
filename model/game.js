@@ -7,7 +7,7 @@ var mongoose = require('mongoose'),
 
 var gameSchema = new mongoose.Schema({
     gameId: { type: String, default: Shortid.generate() },
-    field: String, // json string
+    field: { type: String, default: '' }, // json string
     fieldWidth: { type: Number, default: 10 },
     fieldHeight: { type: Number, default: 10 },
     activePlayer: { type: String, default: constants.player1 },
@@ -82,6 +82,8 @@ gameSchema.methods.changeActivePlayer = function changeActivePlayer() {
  * of the Schema and will therefore not be permanently stored to database), the error value object can be fetched with
  * this.getValidateMoveDataError()
  * if no validation error occurs, this game's errorText and errorKey values will be reset to ''
+ *
+ * @todo check if what happens if moveData.x or moveData.y is NaN (coming from GameRepository.getMoveData())
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @public
@@ -393,7 +395,7 @@ gameSchema.methods.acceptChallenge = function(username) {
         // check if the game is in status "prestart"
         if (scope.status !== constants.status.prestart) {
             reject({
-                text: 'cannot accept challenge of game if status is "prestart"',
+                text: 'cannot accept challenge of game if status is not "prestart"',
                 key: 'game_0017'
             });
             return;
@@ -409,6 +411,7 @@ gameSchema.methods.acceptChallenge = function(username) {
  * creates a clone of this game and removes all "unnecessary" key-value-pairs before returning it
  *
  * @author Julian Mollik <jule@creative-coding.net>
+ * @public
  * @returns {object}
  */
 gameSchema.methods.sanitizeForOutput = function sanitizeForOutput() {
@@ -465,3 +468,10 @@ gameSchema.methods.printField = function printField() {
 };
 
 mongoose.model('Game', gameSchema);
+
+if (process.env.NODE_ENV === 'test') {
+    // in environment "test", also export private functions
+    module.exports = {
+        getPiece: getPiece
+    };
+}

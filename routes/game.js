@@ -332,14 +332,8 @@ router.route('/:gameId/accept')
 
         GameRepository.getGame(req.gameId, where, username).then(function(game) {
             // resolve callback
-
-            console.log('getGame() resolve:', game);
-
             game.acceptChallenge(username).then(function() {
                 // resolve callback
-
-                console.log('acceptChallenge() resolve');
-
                 // continue code-flow at saveGame()
                 saveGame(game, {}, res);
             }, function(error) {

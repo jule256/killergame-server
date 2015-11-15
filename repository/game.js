@@ -30,6 +30,12 @@ var blacklist = ['created_at', '__v', '_id'];
 var getOrderbyObject = function(column, direction) {
     var sortObj = {};
 
+    if (typeof column === 'undefined' || typeof direction === 'undefined') {
+        return {
+            score: -1
+        };
+    }
+
     if (config.gameListWhitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
         config.gameListWhitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
         return {
@@ -311,13 +317,11 @@ GameRepository = {
     }
 };
 
+if (process.env.NODE_ENV === 'test') {
+    // in environment "test", also export private functions
+    GameRepository = merge(GameRepository, {
+        getOrderbyObject: getOrderbyObject
+    });
+}
+
 module.exports = GameRepository;
-
-
-
-
-
-
-
-
-

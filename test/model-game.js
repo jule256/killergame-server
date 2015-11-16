@@ -28,7 +28,7 @@ isValidDate = function(d) {
     }
 };
 
-describe.only('model/game.js', function() {
+describe('model/game.js', function() {
 
     beforeEach(function(done) {
         constants.token.player1 = 'x';
@@ -113,6 +113,15 @@ describe.only('model/game.js', function() {
         });
         it('invalid parameter', function() {
             expect(GameModel.getPiece('player3000')).to.equal('o');
+        });
+    });
+
+    describe('sortByPosition() - private', function() {
+        it('sorting', function() {
+            var input = [[2,4],[2,2],[2,6],[2,5],[1,2]];
+            input.sort(GameModel.sortByPosition);
+
+            expect(JSON.stringify(input)).to.equal('[[1,2],[2,2],[2,4],[2,5],[2,6]]');
         });
     });
 
@@ -490,24 +499,6 @@ describe.only('model/game.js', function() {
 
                 done();
             });
-        });
-    });
-
-    describe('checkForWin()', function() {
-        it('@todo', function() {
-            expect(true).to.be.true;
-        });
-    });
-
-    describe('checkForWinDirection1()', function() {
-        it('@todo', function() {
-            expect(true).to.be.true;
-        });
-    });
-
-    describe('checkForWinDirection2()', function() {
-        it('@todo', function() {
-            expect(true).to.be.true;
         });
     });
 

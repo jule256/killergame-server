@@ -560,7 +560,7 @@ PlayerRepository = {
             available = available || false, // jshint ignore:line
             blacklistExclude = this.getBlacklistExcludeString();
         if (available) {
-            return this.getAvailablePlayers(params, sortObj, blacklistExclude);
+            return getAvailablePlayers(params, sortObj, blacklistExclude);
         }
         else {
             return getAllPlayers(params, sortObj, blacklistExclude);

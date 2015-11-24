@@ -15,6 +15,7 @@
 | ``      |  | - |
 | `player_0001`        | player with id `<playerId>` does not exist                | - |
 | `player_0002`        | player with id `<username>` does not exist                | - |
+| `player_0003`        | player with the given credentials does not exist          | - |
 | ``      |  | - |
 | `player_login_0001`  | username and/or password is invalid                       | - |
 | ``      |  | - |
@@ -37,7 +38,7 @@
 | `game_0014`      | could not create new game                                     | - |
 | `game_0015`      | could not initialize new game                                 | - |
 | `game_0016`      | cannot accept challenge of game if user is not the challengee | - |
-| `game_0017`      | cannot accept challenge of game if status is "prestart"       | - |
+| `game_0017`      | cannot accept challenge of game if status is not "prestart"   | - |
 | ``      |  | - |
 | ``      |  | - |
 | ``      |  | - |

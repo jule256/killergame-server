@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
+    merge = require('merge'), // to merge two objects
     md5 = require('md5'),
     config = require('../config/config'),
     constants = require('../config/constants'),
@@ -30,6 +31,12 @@ var blacklist = ['created_at', '__v', '_id'];
  */
 var getOrderbyObject = function(column, direction) {
     var sortObj = {};
+
+    if (typeof column === 'undefined' || typeof direction === 'undefined') {
+        return {
+            score: -1
+        };
+    }
 
     if (config.playerListWhitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
         config.playerListWhitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
@@ -65,6 +72,7 @@ var getAvailablePlayers = function(params, sortObj, blacklistExclude) {
     return new Promise(function(resolve, reject) {
         GameRepository.getGames(gameParams, gameWhere).then(function (games) {
             // resolve callback
+
             getAllPlayers(params, sortObj, blacklistExclude).then(function (players) {
                 // resolve callback
 
@@ -76,11 +84,12 @@ var getAvailablePlayers = function(params, sortObj, blacklistExclude) {
                     }
                 }
 
-                resolve({
-                    players: availablePlayers
-                });
+                resolve(
+                    availablePlayers
+                );
             }, function (error) {
                 // error callback
+
                 reject({
                     text: 'there was an error querying the database',
                     key: 'database_0001'
@@ -88,6 +97,7 @@ var getAvailablePlayers = function(params, sortObj, blacklistExclude) {
             });
         }, function (error) {
             // error callback
+
             reject({
                 text: 'there was an error querying the database',
                 key: 'database_0001'
@@ -107,6 +117,11 @@ var getAvailablePlayers = function(params, sortObj, blacklistExclude) {
  */
 var isPlayerInGame = function(username, games) {
     var i;
+
+    if (typeof games === 'undefined' || typeof username === 'undefined') {
+        return false;
+    }
+
     for (i = 0; i < games.length; i++) {
         if (games[i].player1 === username || games[i].player2 === username) {
             return true;
@@ -176,7 +191,7 @@ PlayerRepository = {
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
-     * @param {Number} playerId
+     * @param {String} playerId
      * @returns {bluebird|exports|module.exports}
      */
     getPlayerByPlayerId: function(playerId) {
@@ -228,8 +243,8 @@ PlayerRepository = {
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
-     * @param username
-     * @param password
+     * @param {string} username
+     * @param {string} password
      * @returns {bluebird|exports|module.exports}
      */
     getPlayerByUsernameAndPassword: function(username, password) {
@@ -240,7 +255,10 @@ PlayerRepository = {
                 password: passwordx
             }, function (err, player) {
                 if (!player) {
-                    reject();
+                    reject({
+                        text: 'player with the provided credentials does not exist',
+                        key: 'player_0003'
+                    });
                 }
                 else {
                     resolve(player);
@@ -273,7 +291,7 @@ PlayerRepository = {
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {object} reqBody
-     * @param {number} playerId
+     * @param {string} playerId
      * @returns {{name: string, email: string, password_1: string, password_2: string}}
      */
     getPlayerData: function(reqBody, playerId) {
@@ -306,7 +324,7 @@ PlayerRepository = {
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
-     * @param playerData
+     * @param {object} playerData
      * @returns {bluebird|exports|module.exports}
      */
     validateNewPlayerData: function(playerData) {
@@ -363,7 +381,7 @@ PlayerRepository = {
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
-     * @param playerData
+     * @param {object} playerData
      * @returns {bluebird|exports|module.exports}
      */
     validatePlayerData: function(playerData) {
@@ -536,10 +554,11 @@ PlayerRepository = {
      */
     getPlayerListData: function(req) {
         return {
-            limit: req.limit || config.playerListLimit,
-            offset: req.offset || config.playerListOffset,
-            column: req.column || config.playerListColumn,
-            direction: req.direction || config.playerListDirection
+            limit: typeof req === 'undefined' ? config.playerListLimit : req.limit || config.playerListLimit,
+            offset: typeof req === 'undefined' ? config.playerListOffset : req.offset || config.playerListOffset,
+            column: typeof req === 'undefined' ? config.playerListColumn : req.column || config.playerListColumn,
+            direction: typeof req === 'undefined' ?
+                config.playerListDirection : req.direction || config.playerListDirection
         };
     },
 
@@ -556,16 +575,28 @@ PlayerRepository = {
      * @returns {bluebird|exports|module.exports}
      */
     getPlayers: function(params, available) {
-        var sortObj = getOrderbyObject(params.column, params.direction),
+        var column = typeof params === 'undefined' ? undefined : params.column,
+            direction = typeof params === 'undefined' ? undefined : params.direction,
+            sortObj = getOrderbyObject(column, direction),
             available = available || false, // jshint ignore:line
             blacklistExclude = this.getBlacklistExcludeString();
         if (available) {
-            return this.getAvailablePlayers(params, sortObj, blacklistExclude);
+            return getAvailablePlayers(params, sortObj, blacklistExclude);
         }
         else {
             return getAllPlayers(params, sortObj, blacklistExclude);
         }
     }
 };
+
+if (process.env.NODE_ENV === 'test') {
+    // in environment "test", also export private functions
+    PlayerRepository = merge(PlayerRepository, {
+        getOrderbyObject: getOrderbyObject,
+        getAvailablePlayers: getAvailablePlayers,
+        isPlayerInGame: isPlayerInGame,
+        getAllPlayers: getAllPlayers
+    });
+}
 
 module.exports = PlayerRepository;

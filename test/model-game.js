@@ -7,7 +7,7 @@ var Shortid = require('shortid'),
     expect = require("chai").expect,
     should = require('chai').should(),
     assert = require('chai').assert,
-    mongoose = require('mongoose'),
+    mongoose = require('mongoose'), // mongo connection
     constants = require('../config/constants'),
     GameModel = require('../model/game'),
     isValidDate,
@@ -713,12 +713,14 @@ describe('model/game.js', function() {
                 game.acceptChallenge('another-cool-player').then(function() {
                     // resolve callback
                     assert.notOk(true, 'failed');
+
                     done();
                 }, function(error) {
                     // error callback
                     should.exist(error);
                     expect(error.text).to.equal('cannot accept challenge of game if user is not the challengee');
                     expect(error.key).to.equal('game_0016');
+
                     done();
                 });
             });
@@ -810,7 +812,6 @@ describe('model/game.js', function() {
             });
         });
     });
-
 });
 
 

@@ -4,7 +4,7 @@ process.env.NODE_ENV = 'test';
 
 var expect = require("chai").expect,
     should = require('chai').should(),
-    mongoose = require('mongoose'),
+    mongoose = require('mongoose'), // mongo connection
     newGameData,
     gameModel,
     fieldEW1,

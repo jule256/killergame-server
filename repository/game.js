@@ -4,8 +4,7 @@ var mongoose = require('mongoose'), // mongo connection
     Promise = require('bluebird'), // to use promises
     merge = require('merge'), // to merge two objects
     config = require('../config/config'),
-    constants = require('../config/constants'),
-    GameRepository;
+    constants = require('../config/constants');
 
 /**
  * model values which should NOT be delivered in responses
@@ -23,12 +22,18 @@ var blacklist = ['created_at', '__v', '_id'];
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @private
- * @param column
- * @param direction
+ * @param {string} column
+ * @param {string} direction
  * @returns {object}
  */
 var getOrderbyObject = function(column, direction) {
     var sortObj = {};
+
+    if (typeof column === 'undefined' || typeof direction === 'undefined') {
+        return {
+            created_at: -1
+        };
+    }
 
     if (config.gameListWhitelistValue.indexOf(column.toLowerCase()) === -1 || // check if column-name is valid
         config.gameListWhitelistOrder.indexOf(direction.toLowerCase()) === -1) { // check if sort-order is valid
@@ -174,21 +179,22 @@ GameRepository = {
 
         return new Promise(function(resolve, reject) {
 
-            // check if given player usernames are identical
-            if (gameData.player1 === gameData.player2) {
-                reject({
-                    text: 'player1 and player2 can\'t be the same',
-                    key: 'game_0009'
-                });
-            }
-
             // check if both given player usernames are set
-            if (typeof gameData.player1 === 'undefined' ||
+            if (typeof gameData === 'undefined' ||
+                typeof gameData.player1 === 'undefined' ||
                 typeof gameData.player2 === 'undefined') {
 
                 reject({
                     text: 'player1 and/or player2 username not set',
                     key: 'game_0008'
+                });
+            }
+
+            // check if given player usernames are identical
+            if (gameData.player1 === gameData.player2) {
+                reject({
+                    text: 'player1 and player2 can\'t be the same',
+                    key: 'game_0009'
                 });
             }
 
@@ -311,13 +317,11 @@ GameRepository = {
     }
 };
 
+if (process.env.NODE_ENV === 'test') {
+    // in environment "test", also export private functions
+    GameRepository = merge(GameRepository, {
+        getOrderbyObject: getOrderbyObject
+    });
+}
+
 module.exports = GameRepository;
-
-
-
-
-
-
-
-
-

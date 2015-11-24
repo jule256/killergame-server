@@ -33,6 +33,8 @@ ConfigDb = {
                 break;
             case 'development':
                 /* falls through */
+            case 'test':
+                /* falls through */
             default:
                 return 'mongodb://localhost:27017/killergame2';
         }

@@ -15,6 +15,7 @@
 | ``      |  | - |
 | `player_0001`        | player with id `<playerId>` does not exist                | - |
 | `player_0002`        | player with id `<username>` does not exist                | - |
+| `player_0003`        | player with the given credentials does not exist          | - |
 | ``      |  | - |
 | `player_login_0001`  | username and/or password is invalid                       | - |
 | ``      |  | - |

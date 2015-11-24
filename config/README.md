@@ -33,6 +33,7 @@ Edit the [package.json](../package.json) and add the environment variable `NODE_
   // [...]
   "scripts": {
     "start": "NODE_ENV=mongolab node ./bin/www"
+    // [...]
   },
   // [...]
 }

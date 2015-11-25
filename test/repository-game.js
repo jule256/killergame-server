@@ -50,12 +50,12 @@ describe('repository/game.js', function() {
             var column = 'abcdef',
                 direction = 'up';
             expect(GameRepository.getOrderbyObject()).to.deep.equal({
-                score: -1
+                created_at: -1
             });
         });
         it('no parameters', function() {
             expect(GameRepository.getOrderbyObject()).to.deep.equal({
-                score: -1
+                created_at: -1
             });
         });
     });

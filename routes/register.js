@@ -84,9 +84,7 @@ getList = function(req, res, next) {
         // resolve callback
         res.format({
             json: function() {
-                res.json({
-                    players: players
-                });
+                res.json(players);
             }
         });
     }, function(error) {

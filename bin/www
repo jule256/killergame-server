@@ -1,100 +1,60 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
+'use strict';
 
-var app = require('../app');
-var debug = require('debug')('express-node-mongo-skeleton:server');
-var http = require('http');
+// dependencies
+var app = require('../app'),
+    http = require('http'),
+    port = normalizePort(process.env.PORT || '3000');
 
-// reload module
-// @todo does not work
-// var reload = require('reload');
-
-/**
- * Get port from environment and store in Express.
- */
-
-var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
+// create HTTP server
 var server = http.createServer(app);
 
-/**
- * Listen on provided port, on all network interfaces.
- */
-
+// Listen on provided port, on all network interfaces
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-//reload code here
-//optional reload delay and wait argument can be given to reload, refer to [API](https://github.com/jprichardson/reload#api) below
-// https://www.npmjs.com/package/reload
-// @todo does not work
-// reload(server, app); // , [reloadDelay], [wait]
-
-/**
- * Normalize a port into a number, string, or false.
- */
-
+// normalize a port into a number, string, or false
 function normalizePort(val) {
-  var port = parseInt(val, 10);
-
-  if (isNaN(port)) {
-    // named pipe
-    return val;
-  }
-
-  if (port >= 0) {
-    // port number
-    return port;
-  }
-
-  return false;
+    var port = parseInt(val, 10);
+    if (isNaN(port)) {
+        return val;
+    }
+    if (port >= 0) {
+        return port;
+    }
+    return false;
 }
 
-/**
- * Event listener for HTTP server "error" event.
- */
-
+// event listener for HTTP server "error" event
 function onError(error) {
-  if (error.syscall !== 'listen') {
-    throw error;
-  }
+    var bind;
+    if (error.syscall !== 'listen') {
+        throw error;
+    }
+    bind = typeof port === 'string' ? 'Pipe ' + port : 'Port ' + port;
 
-  var bind = typeof port === 'string'
-    ? 'Pipe ' + port
-    : 'Port ' + port
-
-  // handle specific listen errors with friendly messages
-  switch (error.code) {
-    case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
-      process.exit(1);
-      break;
-    case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
-      process.exit(1);
-      break;
-    default:
-      throw error;
-  }
+    // handle specific listen errors with friendly messages
+    switch (error.code) {
+        case 'EACCES':
+          console.error(bind + ' requires elevated privileges');
+          process.exit(1);
+          break;
+        case 'EADDRINUSE':
+          console.error(bind + ' is already in use');
+          process.exit(1);
+          break;
+        default:
+          throw error;
+    }
 }
 
-/**
- * Event listener for HTTP server "listening" event.
- */
-
+// event listener for HTTP server "listening" event
 function onListening() {
-  var addr = server.address();
-  var bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+    var addr = server.address();
+    var bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+    console.info('Listening on ' + bind);
 }

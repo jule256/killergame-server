@@ -1,5 +1,9 @@
-`a-start.js` and  `z-end` are used to establish respectively tear-down the [Mockgoose](https://www.npmjs.com/package/mockgoose) database connection.
+# UNIT TESTING
 
-Mockgoose is acting somehow unpredictable if `mockgoose(mongoose)` is called more than once.
+Unit tests cover all method and functions of the models and repositories, but not the routes.
 
-Since the testing is done alphabetically regarding filenames, I decided to create the two files: `a-start.js` is always processed first and `z-end.js` is always the last file.
+To run unit tests:
+
+```
+computer:killergame-server user$ npm test
+```

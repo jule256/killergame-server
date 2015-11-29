@@ -45,40 +45,14 @@ router.param('gameId', function(req, res, next, gameId) {
 router.route('/')
     // GET
     .get(function(req, res, next) {
-        var moveData = {
-            x: 5,
-            y: 6,
-            username: 'spieler 1',
-            gameId: '1444404958379'
-        };
-        GameReposiory.getGame(moveData.gameId, 'finished', moveData.username).then(function(game) {
-            // resolve callback
-
-            // making the move
-            game.makeMove(moveData);
-
-            game.checkForWin(moveData);
-
-            res.format({
-                json: function() {
-                    res.json({
-                        route: 'GET /dev',
-                        message: 'success'
-                    });
-                }
-            });
-        }, function(error) {
-            // error callback
-            res.format({
-                json: function() {
-                    res.json({
-                        route: 'GET /dev',
-                        message: 'getGame() failed'
-                    });
-                }
-            });
+        res.format({
+            json: function() {
+                res.json({
+                    route: 'GET /dev',
+                    message: 'success'
+                });
+            }
         });
-
     })
     // POST
     .post(function(req, res) {
@@ -86,6 +60,7 @@ router.route('/')
             json: function() {
                 res.json({
                     route: 'POST /dev',
+                    message: 'success',
                     payload: req.body
                 });
             }

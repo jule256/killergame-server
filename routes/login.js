@@ -38,8 +38,8 @@ router.route('/')
             // error callback
             ErrorHelper.sendErrorResponse(res, {
                 code: 403,
-                text: 'player_login_0001',
-                key: 'username and/or password is invalid'
+                key: 'player_login_0001',
+                text: 'username and/or password is invalid'
             });
         });
     });

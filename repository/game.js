@@ -156,9 +156,9 @@ GameRepository = {
      * @param {object} reqBody
      * @returns {{player1: string, player2: string}}
      */
-    getNewGameData: function(reqBody) {
+    getNewGameData: function(username, reqBody) {
         return {
-            player1: reqBody.decodedToken.username,
+            player1: username,
             player2: reqBody.player2,
             fieldWidth: reqBody.fieldWidth || undefined,
             fieldHeight: reqBody.fieldHeight || undefined

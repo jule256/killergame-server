@@ -451,15 +451,14 @@ describe('repository/game.js', function() {
 
     describe('getNewGameData()', function() {
         it('regular parameters', function() {
+            //TODO: Changed test since decodedToken is not on body
+            var creatingUser = 'player_1';
             var reqBody = {
-                decodedToken: {
-                    username: 'player_1'
-                },
                 player2: 'player_2',
                 fieldWidth: 20,
                 fieldHeight: 20
             };
-            expect(GameRepository.getNewGameData(reqBody)).to.deep.equal({
+            expect(GameRepository.getNewGameData(creatingUser, reqBody)).to.deep.equal({
                 player1: 'player_1',
                 player2: 'player_2',
                 fieldWidth: 20,
@@ -467,13 +466,12 @@ describe('repository/game.js', function() {
             });
         });
         it('without fieldWidth and fieldHeight', function() {
+            //TODO: Changed test since decodedToken is not on body
+            var creatingUser = 'player_1';
             var reqBody = {
-                decodedToken: {
-                    username: 'player_1'
-                },
                 player2: 'player_2'
             };
-            expect(GameRepository.getNewGameData(reqBody)).to.deep.equal({
+            expect(GameRepository.getNewGameData(creatingUser, reqBody)).to.deep.equal({
                 player1: 'player_1',
                 player2: 'player_2',
                 fieldWidth: undefined,

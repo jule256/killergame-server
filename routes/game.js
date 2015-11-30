@@ -136,7 +136,8 @@ router.route('/')
     })
     // POST create a new game
     .post(function(req, res, next) {
-        var newGameData = GameRepository.getNewGameData(req.body),
+        var username = req.decodedToken.username;
+        var newGameData = GameRepository.getNewGameData(username, req.body),
             gameModel = mongoose.model('Game');
 
         GameRepository.validateNewGameData(newGameData).then(function() {

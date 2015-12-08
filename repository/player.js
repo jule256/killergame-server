@@ -54,14 +54,17 @@ var getOrderbyObject = function(column, direction) {
  * queries the player table with the given limit, offset and sort paramters and resolves with a
  * sanitized array with all player-objects NOT in a game or rejects with an error, if any
  *
+ * also, the querying player will be filtered out (can't challenge yourself)
+ *
  * @author Julian Mollik <jule@creative-coding.net
  * @private
  * @param {object} params
  * @param {object} sortObj
  * @param {string} blacklistExclude
+ * @param {string} [username]
  * @returns {bluebird|exports|module.exports}
  */
-var getAvailablePlayers = function(params, sortObj, blacklistExclude) {
+var getAvailablePlayers = function(params, sortObj, blacklistExclude, username) {
     var gameParams = { limit: undefined, offset: 0, column: 'status', direction: 'asc' },
         i,
         availablePlayers = [],
@@ -76,8 +79,14 @@ var getAvailablePlayers = function(params, sortObj, blacklistExclude) {
             getAllPlayers(params, sortObj, blacklistExclude).then(function (players) {
                 // resolve callback
 
-                // remove all players which are in a game right now
+                // remove all players which are in a game right now and the player itself (can't challenge yourself)
                 for (i = 0; i < players.length; i++) {
+
+                    if (players[i].username === username) {
+                        // this is the currently active player
+                        continue;
+                    }
+
                     if (!isPlayerInGame(players[i].username, games)) {
                         // player is NOT in a game
                         availablePlayers.push(players[i]);
@@ -567,21 +576,23 @@ PlayerRepository = {
      * sanitized array with player-objects or rejects with an error, if any
      *
      * if the param "availble" is passed and true, only players currently NOT in a game will be queried
+     * if the param "available" and "username" is passed, this username will be removed from the result-list
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {object} params
      * @param {boolean} [available]
+     * @param {string} [username]
      * @returns {bluebird|exports|module.exports}
      */
-    getPlayers: function(params, available) {
+    getPlayers: function(params, available, username) {
         var column = typeof params === 'undefined' ? undefined : params.column,
             direction = typeof params === 'undefined' ? undefined : params.direction,
             sortObj = getOrderbyObject(column, direction),
             available = available || false, // jshint ignore:line
             blacklistExclude = this.getBlacklistExcludeString();
         if (available) {
-            return getAvailablePlayers(params, sortObj, blacklistExclude);
+            return getAvailablePlayers(params, sortObj, blacklistExclude, username);
         }
         else {
             return getAllPlayers(params, sortObj, blacklistExclude);

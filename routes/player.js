@@ -62,7 +62,7 @@ router.param('direction', function(req, res, next, direction) {
  */
 getList = function(req, res, next) {
     var params = PlayerRepository.getPlayerListData(req);
-    PlayerRepository.getPlayers(params, true).then(function(players) {
+    PlayerRepository.getPlayers(params, true, req.decodedToken.username).then(function(players) {
         // resolve callback
         res.format({
             json: function() {

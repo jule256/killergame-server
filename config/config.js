@@ -25,5 +25,8 @@ module.exports = {
     playerListWhitelistOrder: ['asc', 'desc'],
 
     gameListWhitelistValue: ['player1', 'player2', 'created_at', 'status'],
-    gameListWhitelistOrder: ['asc', 'desc']
+    gameListWhitelistOrder: ['asc', 'desc'],
+
+    gameFieldWidth: 10,
+    gameFieldHeight: 10
 };

@@ -149,7 +149,7 @@ GameRepository = {
      * extracts player1 from the token and the player2 value both from the given reqBody object and returns an
      * object usable for creating a game
      * if reqBody contains fieldWidth or fieldHeight, the according values will be extracted
-     * and added to the return object
+     * and added to the return object. Otherwise default values from the config will be used
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
@@ -160,8 +160,8 @@ GameRepository = {
         return {
             player1: username,
             player2: reqBody.player2,
-            fieldWidth: reqBody.fieldWidth || undefined,
-            fieldHeight: reqBody.fieldHeight || undefined
+            fieldWidth: reqBody.fieldWidth || config.gameFieldWidth,
+            fieldHeight: reqBody.fieldHeight || config.gameFieldHeight
         };
     },
 
@@ -242,9 +242,7 @@ GameRepository = {
                 }
                 else {
                     // game has been created
-
                     game.initialize();
-
                     game.save(function (err) {
                         if (err) {
                             reject({

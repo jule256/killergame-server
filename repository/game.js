@@ -266,7 +266,7 @@ GameRepository = {
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {object} reqBody
-     * @param {number} gameId
+     * @param {string} gameId
      * @param {string} username
      * @returns {{x: number, y: number, username: string, gameId: number}}
      */

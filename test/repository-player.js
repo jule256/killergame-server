@@ -177,6 +177,57 @@ describe('repository/player.js', function() {
                 done();
             });
         });
+        it('with username', function(done) {
+            var params = {
+                    limit: 10,
+                    offset: 0
+                },
+                sortObj = {
+                    score: -1
+                };
+
+            PlayerRepository.getAvailablePlayers(params, sortObj, '-created_at -__v -_id', 'player-three')
+                .then(function(players) {
+                    // resolve callback
+
+                    assert.isArray(players);
+                    expect(players.length).to.equal(0);
+
+                    done();
+
+                }, function(error) {
+                    // error callback
+                    assert.notOk(true, 'find() players failed');
+
+                    done();
+                });
+        });
+        it('with username 2', function(done) {
+            var params = {
+                    limit: 10,
+                    offset: 0
+                },
+                sortObj = {
+                    score: -1
+                };
+
+            PlayerRepository.getAvailablePlayers(params, sortObj, '-created_at -__v -_id', 'player-one')
+                .then(function(players) {
+                    // resolve callback
+
+                    assert.isArray(players);
+                    expect(players.length).to.equal(1);
+                    expect(players[0].username).to.equal('player-three');
+
+                    done();
+
+                }, function(error) {
+                    // error callback
+                    assert.notOk(true, 'find() players failed');
+
+                    done();
+                });
+        });
     });
 
     describe('isPlayerInGame() - private', function() {

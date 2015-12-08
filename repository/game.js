@@ -275,7 +275,7 @@ GameRepository = {
         return {
             x: +reqBody.x, // parse to int
             y: +reqBody.y, // parse to int
-            username: reqBody.decodedToken.username,
+            //username: req.decodedToken.username,
             gameId: gameId
         };
     },

@@ -9,6 +9,7 @@ var mongoose = require('mongoose'), // mongo connection
     game = require('../model/game'),
     player = require('../model/player'),
     constants = require('../config/constants'),
+    config = require('../config/config'),
     GameRepository = require('../repository/game');
 
 describe('repository/game.js', function() {
@@ -451,31 +452,27 @@ describe('repository/game.js', function() {
 
     describe('getNewGameData()', function() {
         it('regular parameters', function() {
-            //TODO: Changed test since decodedToken is not on body
-            var creatingUser = 'player_1';
             var reqBody = {
-                player2: 'player_2',
+                player2: 'player-two',
                 fieldWidth: 20,
                 fieldHeight: 20
             };
-            expect(GameRepository.getNewGameData(creatingUser, reqBody)).to.deep.equal({
-                player1: 'player_1',
-                player2: 'player_2',
+            expect(GameRepository.getNewGameData('player-one', reqBody)).to.deep.equal({
+                player1: 'player-one',
+                player2: 'player-two',
                 fieldWidth: 20,
                 fieldHeight: 20
             });
         });
         it('without fieldWidth and fieldHeight', function() {
-            //TODO: Changed test since decodedToken is not on body
-            var creatingUser = 'player_1';
             var reqBody = {
-                player2: 'player_2'
+                player2: 'player-two'
             };
-            expect(GameRepository.getNewGameData(creatingUser, reqBody)).to.deep.equal({
-                player1: 'player_1',
-                player2: 'player_2',
-                fieldWidth: undefined,
-                fieldHeight: undefined
+            expect(GameRepository.getNewGameData('player-one', reqBody)).to.deep.equal({
+                player1: 'player-one',
+                player2: 'player-two',
+                fieldWidth: config.gameFieldWidth,
+                fieldHeight: config.gameFieldHeight
             });
         });
         it('without parameters', function() {
@@ -669,32 +666,26 @@ describe('repository/game.js', function() {
         it('regular parameters', function() {
             var gameId = '12GhdiZ',
                 reqBody = {
-                    decodedToken: {
-                        username: 'player_1'
-                    },
                     x: 7,
                     y: 8
                 };
-            expect(GameRepository.getMoveData(reqBody, gameId)).to.deep.equal({
+            expect(GameRepository.getMoveData(reqBody, gameId, 'player-one')).to.deep.equal({
                 x: 7,
                 y: 8,
-                username: 'player_1',
+                username: 'player-one',
                 gameId: '12GhdiZ'
             });
         });
         it('string parameters', function() {
             var gameId = '12GhdiZ',
                 reqBody = {
-                    decodedToken: {
-                        username: 'player_1'
-                    },
                     x: '7',
                     y: '8'
                 };
-            expect(GameRepository.getMoveData(reqBody, gameId)).to.deep.equal({
+            expect(GameRepository.getMoveData(reqBody, gameId, 'player-one')).to.deep.equal({
                 x: 7,
                 y: 8,
-                username: 'player_1',
+                username: 'player-one',
                 gameId: '12GhdiZ'
             });
         });
@@ -709,48 +700,27 @@ describe('repository/game.js', function() {
                 GameRepository.getMoveData();
             }).to.throw();
         });
-        it('without gameId parameter', function() {
-            var reqBody = {
-                    decodedToken: {
-                        username: 'player_1'
-                    },
-                    x: '7',
-                    y: '8'
-                };
-            expect(GameRepository.getMoveData(reqBody)).to.deep.equal({
-                x: 7,
-                y: 8,
-                username: 'player_1',
-                gameId: undefined
-            });
-        });
         it('no x coordinate in reqBody parameter', function() {
             var gameId = '12GhdiZ',
                 reqBody = {
-                    decodedToken: {
-                        username: 'player_1'
-                    },
                     y: 8
                 };
-            expect(GameRepository.getMoveData(reqBody, gameId)).to.deep.equal({
+            expect(GameRepository.getMoveData(reqBody, gameId, 'player-one')).to.deep.equal({
                 x: NaN,
                 y: 8,
-                username: 'player_1',
+                username: 'player-one',
                 gameId: '12GhdiZ'
             });
         });
         it('no y coordinate in reqBody parameter', function() {
             var gameId = '12GhdiZ',
                 reqBody = {
-                    decodedToken: {
-                        username: 'player_1'
-                    },
                     x: 7
                 };
-            expect(GameRepository.getMoveData(reqBody, gameId)).to.deep.equal({
+            expect(GameRepository.getMoveData(reqBody, gameId, 'player-one')).to.deep.equal({
                 x: 7,
                 y: NaN,
-                username: 'player_1',
+                username: 'player-one',
                 gameId: '12GhdiZ'
             });
         });

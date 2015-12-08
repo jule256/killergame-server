@@ -260,20 +260,21 @@ GameRepository = {
     },
 
     /**
-     * extracts the x/y coordinate and the token-username from the given reqBody object
-     * and combines it with the given gameId to a return object
+     * extracts the x/y coordinate from the given reqBody object
+     * and combines it with the given gameId and username to a return object
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
      * @param {object} reqBody
      * @param {number} gameId
+     * @param {string} username
      * @returns {{x: number, y: number, username: string, gameId: number}}
      */
-    getMoveData: function(reqBody, gameId) {
+    getMoveData: function(reqBody, gameId, username) {
         return {
             x: +reqBody.x, // parse to int
             y: +reqBody.y, // parse to int
-            //username: req.decodedToken.username,
+            username: username,
             gameId: gameId
         };
     },

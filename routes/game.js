@@ -184,12 +184,10 @@ router.route('/:gameId')
     // PUT to set a game piece
     .put(function(req, res) {
         
-        var moveData = GameRepository.getMoveData(req.body, req.gameId),
+        var moveData = GameRepository.getMoveData(req.body, req.gameId, req.decodedToken.username),
             errorData,
             where = { status: { '$ne': 'finished' }};
             
-            moveData.username = req.decodedToken.username;
-
         GameRepository.getGame(moveData.gameId, where, moveData.username).then(function(game) {
             // resolve callback
 
@@ -290,11 +288,9 @@ router.route('/:gameId')
 router.route('/:gameId/forfeit')
     // PUT to forfeit the game
     .put(function(req, res) {
-        var moveData = GameRepository.getMoveData(req.body, req.gameId),
+        var moveData = GameRepository.getMoveData(req.body, req.gameId, req.decodedToken.username),
             otherPlayer,
             where = { status: { '$ne': 'finished' }};
-
-        moveData.username = req.decodedToken.username;
 
         GameRepository.getGame(moveData.gameId, where, moveData.username).then(function(game) {
             // resolve callback

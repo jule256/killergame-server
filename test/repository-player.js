@@ -12,8 +12,6 @@ var mongoose = require('mongoose'), // mongo connection
     config = require('../config/config'),
     PlayerRepository = require('../repository/player');
 
-process.setMaxListeners(0);
-
 describe('repository/player.js', function() {
 
     beforeEach(function(done) {

@@ -161,7 +161,7 @@ router.route('/:gameId')
     // GET returns the game with the given id
     .get(function(req, res) {
         var gameId = req.gameId,
-            where = { status: { '$ne': 'finished' }};
+            where = {};
         GameRepository.getGame(gameId, where).then(function(game) {
             // resolve callback
             if (!AuthHelper.isNeedleInHaystack(req.decodedToken.username, [ game.player1, game.player2 ])) {

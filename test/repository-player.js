@@ -1456,6 +1456,7 @@ describe('repository/player.js', function() {
     });
 
     describe('updatePlayer()', function() {
+        var playerId;
 
         beforeEach(function(done) {
             var playerModel = mongoose.model('Player'),
@@ -1463,8 +1464,7 @@ describe('repository/player.js', function() {
                     name: 'Player One',
                     email: 'player-one@example.com',
                     password_1: 'some-secret-password',
-                    password_2: 'some-secret-password',
-                    playerId: 'NkovQxpxl'
+                    password_2: 'some-secret-password'
                 };
 
             // reset database before each updatePlayer() test
@@ -1473,6 +1473,9 @@ describe('repository/player.js', function() {
             playerModel.create(playerDataCreate, function (err, player) {
                 should.not.exist(err);
                 player.initialize(playerDataCreate.password_1);
+
+                playerId = player.playerId;
+
                 player.save(function (err) {
                     should.not.exist(err);
                     done();
@@ -1485,7 +1488,7 @@ describe('repository/player.js', function() {
                     name: 'Player Number One',
                     email: 'player-number-one@example.net',
                     password_1: 'a-new-secret-password',
-                    playerId: 'NkovQxpxl'
+                    playerId: playerId
                 };
 
             PlayerRepository.updatePlayer(playerModel, playerDataUpdate).then(function(player) {
@@ -1510,7 +1513,7 @@ describe('repository/player.js', function() {
                     name: 'Player Number One',
                     email: 'player-number-one@example.net',
                     password_1: 'a-new-secret-password',
-                    playerId: 'NkovQxpxl'
+                    playerId: playerId
                 };
 
             config.passwordHash = 'ABCDEfghi1234';
@@ -1534,7 +1537,7 @@ describe('repository/player.js', function() {
                 playerDataUpdate = {
                     name: 'Player Number One',
                     email: 'player-number-one@example.net',
-                    playerId: 'NkovQxpxl'
+                    playerId: playerId
                 };
 
             PlayerRepository.updatePlayer(playerModel, playerDataUpdate).then(function(player) {

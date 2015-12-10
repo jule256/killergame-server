@@ -12,7 +12,7 @@ var playerSchema = new mongoose.Schema({
     username: String,
     email: String,
     score: { type: Number, default: 0 },
-    created_at: { type: Date, default: '' },
+    created_at: { type: Date, default: null },
     active: { type: Boolean, default: true },
     password: String
 });
@@ -26,7 +26,7 @@ var playerSchema = new mongoose.Schema({
 playerSchema.methods.initialize = function initialize(password) {
     this.passwordx = password; // should automatically invoke the virtual passwordx method
     this.playerId = Shortid.generate();
-    this.created_at = Date.now;
+    this.created_at = Date.now();
 };
 
 /**

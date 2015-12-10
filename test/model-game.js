@@ -63,14 +63,14 @@ describe('model/game.js', function() {
 
             gameModel.create(newGameData1, function (err, game) {
                 should.not.exist(err);
-                expect(Shortid.isValid(game.gameId)).to.be.true;
+
                 expect(game.field).to.equal('');
                 expect(game.fieldWidth).to.equal(10);
                 expect(game.fieldHeight).to.equal(10);
                 expect(game.activePlayer).to.equal('player1');
                 expect(game.status).to.equal('prestart');
                 expect(game.result).to.equal('');
-                expect(isValidDate(game.created_at)).to.be.true; // @todo check if there is a better solution
+                expect(game.created_at).to.be.null;
                 assert.isArray(game.setCoord);
                 expect(game.setCoord.length).to.equal(0);
                 expect(game.moveCount).to.equal(0);
@@ -126,17 +126,20 @@ describe('model/game.js', function() {
     });
 
     describe('initialize()', function() {
-        it('field contents', function (done) {
+        it('field contents, gameId & created_at', function (done) {
             var fieldObj;
 
             gameModel.create(newGameData, function (err, game) {
                 should.not.exist(err);
+
                 expect(game.fieldWidth).to.equal(3);
                 expect(game.fieldHeight).to.equal(3);
 
                 game.initialize();
 
                 expect(game.field).to.equal('[["","",""],["","",""],["","",""]]');
+                expect(Shortid.isValid(game.gameId)).to.be.true;
+                expect(isValidDate(game.created_at)).to.be.true; // @todo check if there is a better solution
 
                 fieldObj = JSON.parse(game.field);
                 expect(fieldObj).to.deep.equal([

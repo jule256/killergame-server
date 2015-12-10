@@ -7,12 +7,12 @@ var mongoose = require('mongoose'),
     PlayerRepository = require('../repository/player');
 
 var playerSchema = new mongoose.Schema({
-    playerId: { type: String, default: Shortid.generate() },
+    playerId: { type: String, default: '' },
     name: String,
     username: String,
     email: String,
     score: { type: Number, default: 0 },
-    created_at: { type: Date, default: Date.now },
+    created_at: { type: Date, default: '' },
     active: { type: Boolean, default: true },
     password: String
 });
@@ -25,6 +25,8 @@ var playerSchema = new mongoose.Schema({
  */
 playerSchema.methods.initialize = function initialize(password) {
     this.passwordx = password; // should automatically invoke the virtual passwordx method
+    this.playerId = Shortid.generate();
+    this.created_at = Date.now;
 };
 
 /**

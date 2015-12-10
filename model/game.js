@@ -6,14 +6,14 @@ var mongoose = require('mongoose'),
     constants = require('../config/constants');
 
 var gameSchema = new mongoose.Schema({
-    gameId: { type: String, default: Shortid.generate() },
+    gameId: { type: String, default: '' },
     field: { type: String, default: '' }, // json string
     fieldWidth: { type: Number, default: 10 },
     fieldHeight: { type: Number, default: 10 },
     activePlayer: { type: String, default: constants.player1 },
     status: { type: String, default: constants.status.prestart },
     result: { type: String, default: constants.result.default },
-    created_at: { type: Date, default: Date.now },
+    created_at: { type: Date, default: '' },
     player1: String, // username of player 1
     player2: String, // username of player 2
     setCoord: { type: Array, default: [] }, // where the winning set is stored
@@ -64,6 +64,8 @@ gameSchema.methods.initialize = function initialize() {
         }
     }
     this.field = JSON.stringify(fieldObj);
+    this.gameId = Shortid.generate();
+    this.created_at = Date.now;
 };
 
 /**

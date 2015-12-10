@@ -242,7 +242,9 @@ GameRepository = {
                 }
                 else {
                     // game has been created
+
                     game.initialize();
+
                     game.save(function (err) {
                         if (err) {
                             reject({

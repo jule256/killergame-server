@@ -286,7 +286,6 @@ Response
         "fieldWidth": 10,
         "gameId": <gameId> // the gameId is needed for all game related requests
     }
-    // @todo maybe add "lastMoveData" to the response
 }
 ```
 ---

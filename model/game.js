@@ -80,7 +80,6 @@ gameSchema.methods.makeMove = function makeMove(moveData) {
 
     this.moveCount++; // increase number of moves
 
-    // @todo think of best place to change from "ready" to "inprogress", here it is set during every move
     this.status = constants.status.inprogress;
 };
 
@@ -100,8 +99,6 @@ gameSchema.methods.changeActivePlayer = function changeActivePlayer() {
  * of the Schema and will therefore not be permanently stored to database), the error value object can be fetched with
  * this.getValidateMoveDataError()
  * if no validation error occurs, this game's errorText and errorKey values will be reset to ''
- *
- * @todo check if what happens if moveData.x or moveData.y is NaN (coming from GameRepository.getMoveData())
  *
  * @author Julian Mollik <jule@creative-coding.net>
  * @public
@@ -206,7 +203,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
         resetSetCoord = [ [moveData.x, moveData.y] ];
 
     // check EAST ► WEST ⟷
-    setCoord = resetSetCoord;
+    setCoord = [].concat(resetSetCoord);
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 0, -1, 0);
     if (setCoord.length === 5) {
         this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
@@ -214,7 +211,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     }
 
     // check NORTH ► SOUTH ↕
-    setCoord = resetSetCoord;
+    setCoord = [].concat(resetSetCoord);
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 0, 1, 0, -1);
     if (setCoord.length === 5) {
         this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
@@ -222,7 +219,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     }
 
     // check NORTH-WEST ► SOUTH-EAST ⤡
-    setCoord = resetSetCoord;
+    setCoord = [].concat(resetSetCoord);
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, 1, 1, -1, -1);
     if (setCoord.length === 5) {
         this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
@@ -230,7 +227,7 @@ gameSchema.methods.checkForWin = function checkForWin(moveData) {
     }
 
     // check NORTH-EAST ► SOUTH-WEST ⤢
-    setCoord = resetSetCoord;
+    setCoord = [].concat(resetSetCoord);
     setCoord = this.checkForWinDirection1(moveData.x, moveData.y, setCoord, -1, 1, 1, -1);
     if (setCoord.length === 5) {
         this.finishGame('win_' + this.usernameToPlayerX(moveData.username), setCoord);
@@ -477,7 +474,7 @@ gameSchema.methods.printField = function printField() {
     console.log(frame2);
     for (y = 0; y < this.fieldHeight; y++) {
         for (x = 0; x < this.fieldWidth; x++) {
-            line += fieldObj[x][y] === '' ? '□' : fieldObj[x][y];
+            line += fieldObj[y][x] === '' ? '□' : fieldObj[y][x];
         }
         console.log('- ' + y + ' ' + line + ' ' + y + ' -');
         line = '';

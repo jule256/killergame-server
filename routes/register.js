@@ -142,8 +142,6 @@ router.route('/limit/:limit(\\d+)/offset/:offset/sort/:column(\\w+)/:direction(\
 // AuthHelper middleware takes care of token verification ------
 router.use(AuthHelper.verifyToken);
 
-// @todo return new token
-
 router.route('/:playerId')
     // PUT to update a player
     .put(function(req, res) {

@@ -139,7 +139,7 @@ describe('model/game.js', function() {
 
                 expect(game.field).to.equal('[["","",""],["","",""],["","",""]]');
                 expect(Shortid.isValid(game.gameId)).to.be.true;
-                expect(isValidDate(game.created_at)).to.be.true; // @todo check if there is a better solution
+                expect(isValidDate(game.created_at)).to.be.true;
 
                 fieldObj = JSON.parse(game.field);
                 expect(fieldObj).to.deep.equal([

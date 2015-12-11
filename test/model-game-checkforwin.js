@@ -28,7 +28,7 @@ var expect = require("chai").expect,
     fieldNWSE4,
     fieldNWSE5;
 
-describe('model/game.js wth checkForWin()', function() {
+describe('model/game.js with checkForWin()', function() {
 
     beforeEach(function(done) {
         // standard game parameter for most tests

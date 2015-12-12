@@ -787,10 +787,38 @@ describe('repository/game.js', function() {
                 done();
             });
         });
-        /**/
     });
 
     describe('createGame()', function() {
+        beforeEach(function(done) {
+            var gameModel = mongoose.model('Game'),
+                gameDataCreate1 = {
+                    player1: 'player-one',
+                    player2: 'player-three',
+                    status: 'prestart',
+                    gameId: 'Io8sNxWlh'
+                },
+                gameDataCreate2 = {
+                    player1: 'player-two',
+                    player2: 'player-three',
+                    status: 'finished',
+                    gameId: 'he7PowhxA'
+                };
+
+            // reset database before each getAvailablePlayers() test
+            mongoose.connection.db.dropDatabase();
+
+            gameModel.create(gameDataCreate1, function (err, player) {
+                should.not.exist(err);
+
+                gameModel.create(gameDataCreate2, function (err, player) {
+                    should.not.exist(err);
+
+                    done();
+                });
+            });
+        });
+
         it('regular parameter', function(done) {
             var gameModel = mongoose.model('Game'),
                 newGameData = {
@@ -801,7 +829,51 @@ describe('repository/game.js', function() {
             GameRepository.createGame(gameModel, newGameData).then(function(game) {
                 // resolve callback
 
-                assert.ok(true, 'successful');
+                should.exist(game);
+
+                done();
+            }, function(error) {
+                // error callback
+
+                assert.notOk(true, 'save() failed');
+
+                done();
+            });
+        });
+        it('game already exists "prestart"', function(done) {
+            var gameModel = mongoose.model('Game'),
+                newGameData = {
+                    player1: 'player-one',
+                    player2: 'player-three'
+                };
+
+            GameRepository.createGame(gameModel, newGameData).then(function(game) {
+                // resolve callback
+
+                should.exist(game);
+                expect(game.gameId).to.equal('Io8sNxWlh');
+
+                done();
+            }, function(error) {
+                // error callback
+
+                assert.notOk(true, 'save() failed');
+
+                done();
+            });
+        });
+        it('game already exists "finished"', function(done) {
+            var gameModel = mongoose.model('Game'),
+                newGameData = {
+                    player1: 'player-two',
+                    player2: 'player-three'
+                };
+
+            GameRepository.createGame(gameModel, newGameData).then(function(game) {
+                // resolve callback
+
+                should.exist(game);
+                expect(game.gameId).to.not.equal('he7PowhxA');
 
                 done();
             }, function(error) {

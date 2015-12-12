@@ -111,6 +111,70 @@ GameRepository = {
     },
 
     /**
+     * resolves if deleting the game with the given gameId was successful and rejects if the game does not belong
+     * to the user with the given username
+     *
+     * @author Julian Mollik <jule@creative-coding.net>
+     * @public
+     * @param {string} gameId
+     * @param {string} username
+     * @returns {bluebird|exports|module.exports}
+     */
+    deleteGame: function(gameId, username) {
+        var where = {
+            gameId: gameId
+        };
+        return new Promise(function (resolve, reject) {
+            if (typeof gameId === 'undefined') {
+                reject({
+                    text: 'no gameId provided',
+                    key: 'game_0020'
+                });
+            }
+            mongoose.model('Game').findOne(where, function(err, game) {
+                if (!game) {
+                    reject({
+                        text: 'game with id "' + gameId + '" does not exist',
+                        key: 'game_0001'
+                    });
+                }
+                else if (typeof username !== 'undefined') {
+                    // check if passed username belongs to the game (if any username was passed)
+                    if (game.player1 !== username && game.player2 !== username) {
+                        reject({
+                            text: 'game does not belong to user ' + username,
+                            key: 'game_0002'
+                        });
+                    }
+                    else {
+                        if (game.status !== constants.status.prestart) {
+                            reject({
+                                text: 'cannot delete game which is not in status "prestart"',
+                                key: 'game_0019'
+                            });
+                        }
+                        mongoose.model('Game').remove(where, function(err) {
+                            if (err) {
+                                reject({
+                                    text: 'there was an error deleting from the database',
+                                    key: 'database_0003'
+                                });
+                            }
+                            resolve();
+                        });
+                    }
+                }
+                else {
+                    reject({
+                        text: 'cannot delete game of other players',
+                        key: 'game_0018'
+                    });
+                }
+            });
+        });
+    },
+
+    /**
      * resolves with all games where the given username is playerX (being "player1" or "player2") and the
      * status is "ready" (if parameter accepted is true) or "prestart" (if parameter accepted is false)
      *

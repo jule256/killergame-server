@@ -4,6 +4,7 @@
 | :-------------------- |:-------------------| ---------------------------------------:|
 | `database_0001`       | there was an error querying the database                 | - |
 | `database_0002`       | there was an error writing to the database               | - |
+| `database_0003`       | there was an error deleting from the database            | - |
 | ``      |  | - |
 | `player_register_0001`      | not all necessary data is set                      | - |
 | `player_register_0002`      | passwords do not match                             | - |
@@ -39,7 +40,8 @@
 | `game_0015`      | could not initialize new game                                 | - |
 | `game_0016`      | cannot accept challenge of game if user is not the challengee | - |
 | `game_0017`      | cannot accept challenge of game if status is not "prestart"   | - |
-| ``      |  | - |
+| `game_0018`      | cannot delete game of other players                           | - |
+| `game_0019`      | cannot delete game which is not in status "prestart"          | - |
 | ``      |  | - |
 | ``      |  | - |
 | ``      |  | - |

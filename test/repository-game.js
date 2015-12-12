@@ -196,6 +196,158 @@ describe('repository/game.js', function() {
         });
     });
 
+    describe('deleteGame()', function() {
+        beforeEach(function(done) {
+            var gameModel = mongoose.model('Game'),
+                gameDataCreate1 = {
+                    player1: 'player-one',
+                    player2: 'player-two',
+                    status: 'prestart',
+                    gameId: 'NkovQxpxl'
+                },
+                gameDataCreate2 = {
+                    player1: 'player-one',
+                    player2: 'player-two',
+                    status: 'inprogress',
+                    gameId: 'du8eLi2xd'
+                }
+
+            // reset database before each deleteGame() test
+            mongoose.connection.db.dropDatabase();
+
+            gameModel.create(gameDataCreate1, function (err, game) {
+                should.not.exist(err);
+
+                gameModel.create(gameDataCreate2, function (err, game) {
+                    should.not.exist(err);
+
+                    done();
+                });
+            });
+        });
+        it('regular parameters player1', function(done) {
+            GameRepository.deleteGame('NkovQxpxl', 'player-one').then(function() {
+                // resolve callback
+
+                assert.ok(true, 'findOne() delete game successful');
+
+                done();
+
+            }, function(error) {
+                // error callback
+
+                assert.notOk(true, 'findOne() game failed');
+
+                done();
+            });
+        });
+        it('regular parameters player2', function(done) {
+            GameRepository.deleteGame('NkovQxpxl', 'player-two').then(function() {
+                // resolve callback
+
+                assert.ok(true, 'delete game successful');
+
+                done();
+
+            }, function(error) {
+                // error callback
+                assert.notOk(true, 'findOne() game failed');
+
+                done();
+            });
+        });
+        it('no username parameter', function(done) {
+            GameRepository.deleteGame('NkovQxpxl').then(function() {
+                // resolve callback
+
+                assert.notOk(true, 'findOne() game failed');
+
+                done();
+
+            }, function(error) {
+                // error callback
+                should.exist(error);
+
+                expect(error.text).to.equal('cannot delete game of other players');
+                expect(error.key).to.equal('game_0018');
+
+                done();
+            });
+        });
+        it('no game id parameter', function(done) {
+            GameRepository.deleteGame().then(function() {
+                // resolve callback
+
+                assert.notOk(true, 'findOne() game failed');
+
+                done();
+
+            }, function(error) {
+                // error callback
+                should.exist(error);
+
+                expect(error.text).to.equal('no gameId provided');
+                expect(error.key).to.equal('game_0020');
+
+                done();
+            });
+        });
+        it('not existing game id', function(done) {
+            GameRepository.deleteGame('not-existing').then(function(game) {
+                // resolve callback
+
+                assert.notOk(true, 'findOne() game failed');
+
+                done();
+
+            }, function(error) {
+                // error callback
+                should.exist(error);
+
+                expect(error.text).to.equal('game with id "not-existing" does not exist');
+                expect(error.key).to.equal('game_0001');
+
+                done();
+            });
+        });
+        it('game & username don\'t match', function(done) {
+            GameRepository.deleteGame('NkovQxpxl', 'player-three').then(function(game) {
+                // resolve callback
+
+                assert.notOk(true, 'findOne() game failed');
+
+                done();
+
+            }, function(error) {
+                // error callback
+                should.exist(error);
+
+                expect(error.text).to.equal('game does not belong to user player-three');
+                expect(error.key).to.equal('game_0002');
+
+                done();
+            });
+        });
+        it('game status', function(done) {
+            GameRepository.deleteGame('du8eLi2xd', 'player-one').then(function(game) {
+                // resolve callback
+
+                assert.notOk(true, 'findOne() game failed');
+
+                done();
+
+            }, function(error) {
+                // error callback
+                should.exist(error);
+
+                expect(error.text).to.equal('cannot delete game which is not in status "prestart"');
+                expect(error.key).to.equal('game_0019');
+
+                done();
+            });
+        });
+    });
+
     describe('getChallenges()', function() {
         beforeEach(function(done) {
             var gameModel = mongoose.model('Game'),

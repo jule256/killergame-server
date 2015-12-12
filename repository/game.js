@@ -288,6 +288,7 @@ GameRepository = {
 
     /**
      * resolves if creating a new game with the given gameData was successful and otherwise rejects with an error
+     * if an unfinished game between the two given players exists, the function returns this game
      *
      * @author Julian Mollik <jule@creative-coding.net>
      * @public
@@ -296,28 +297,52 @@ GameRepository = {
      * @returns {bluebird|exports|module.exports}
      */
     createGame: function(gameModel, gameData) {
+        var where = {
+            player1: gameData.player1,
+            player2: gameData.player2,
+            status: {
+                $ne: constants.status.finished
+            }
+        };
+
         return new Promise(function(resolve, reject) {
-            gameModel.create(gameData, function (err, game) {
+
+            // check if there is already an unfinished game between the to given players
+            mongoose.model('Game').findOne(where, function (err, game) {
                 if (err) {
                     reject({
-                        text: 'could not create new game',
-                        key: 'game_0014'
+                        text: 'there was an error querying the database',
+                        key: 'database_0001'
                     });
                 }
+                if (game) {
+                    // unfinished game already exists -> returning it
+                    resolve(game);
+                }
                 else {
-                    // game has been created
-
-                    game.initialize();
-
-                    game.save(function (err) {
+                    gameModel.create(gameData, function (err, game) {
                         if (err) {
                             reject({
-                                text: 'could not initialize new game',
-                                key: 'game_0015'
+                                text: 'could not create new game',
+                                key: 'game_0014'
                             });
                         }
                         else {
-                            resolve(game);
+                            // game has been created
+
+                            game.initialize();
+
+                            game.save(function (err) {
+                                if (err) {
+                                    reject({
+                                        text: 'could not initialize new game',
+                                        key: 'game_0015'
+                                    });
+                                }
+                                else {
+                                    resolve(game);
+                                }
+                            });
                         }
                     });
                 }

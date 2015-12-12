@@ -277,10 +277,17 @@ router.route('/:gameId')
         });
     })
     .delete(function (req, res) {
-        ErrorHelper.sendErrorResponse(res, {
-            code: 404,
-            text: 'DELETE /game is not implemented yet',
-            key: 'todo_0002'
+        GameRepository.deleteGame(req.gameId, req.decodedToken.username).then(function() {
+            // resolve callback
+
+            res.format({
+                json: function() {
+                    res.json({});
+                }
+            });
+        }, function(error) {
+            // error callback
+            ErrorHelper.sendErrorResponse(res, error);
         });
     });
 

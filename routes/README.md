@@ -310,6 +310,17 @@ Response
     }
 }
 ```
+---
+**🔐 DELETE /game/`<gameId>`** deletes the game with the id `<gameId>` for the player with for the *token username*
+```
+Payload (none)
+```
+```
+Response
+{
+    // no response content
+}
+```
 ### Endpoint LOGIN
 **🔓 POST /login** returns the auth-token for the player with username `<username>` and password `<password>` if the player exists in database
 ```

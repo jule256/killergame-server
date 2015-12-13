@@ -29,9 +29,15 @@ router.use(AuthHelper.verifyToken);
 
 // accumulating parameters ------
 
-// route middleware to validate :gameId and add it to the req-object
+// route middleware to validate :playerId and add it to the req-object
 router.param('gameId', function(req, res, next, gameId) {
     req.gameId = gameId;
+    next();
+});
+
+// route middleware to validate :gameId and add it to the req-object
+router.param('playerId', function(req, res, next, playerId) {
+    req.playerId = playerId;
     next();
 });
 
@@ -102,6 +108,31 @@ router.route('/challenger')
         }, function(error) {
             // error callback
             ErrorHelper.sendErrorResponse(res, error);
+        });
+    });
+
+router.route('/finished/:playerId')
+    // GET /finished returns all games in state "finished" with player as player1 or player2
+    .get(function(req, res, next) {
+        var playerId = req.playerId;
+        PlayerRepository.getPlayerByPlayerId(playerId).then(function(player) {
+        
+            GameRepository.getFinished(player.username).then(function (games) {
+                // resolve callback
+                res.format({
+                    json: function() {
+                        res.json({
+                            games: games
+                        });
+                    }
+                });
+            }, function(error) {
+                // error callback
+                ErrorHelper.sendErrorResponse(res, error);
+            });
+        }, function(error) {
+            // error callback
+                ErrorHelper.sendErrorResponse(res, error);
         });
     });
 

@@ -208,6 +208,37 @@ GameRepository = {
             });
         });
     },
+    
+    /**
+     * resolves with all games where status is "finished" for a given username
+     *
+     * @author Dominik Süsstrunk
+     * @public
+     * @param {String} username
+     * @returns {bluebird|exports|module.exports}
+     */
+    getFinished: function(username) {
+        var blacklistExclude = this.getBlacklistExcludeString(),
+            where = {
+                $and: [
+                          { $or: [{player1: username}, {player2: username}] },
+                           {status: constants.status.finished}
+                      ]};
+            
+        return new Promise(function (resolve, reject) {
+            mongoose.model('Game').find(where, blacklistExclude, null, function (err, games) {
+                if (err) {
+                    reject({
+                        text: 'there was an error querying the database',
+                        key: 'database_0001'
+                    });
+                }
+                else {
+                    resolve(games);
+                }
+            });
+        });
+    },
 
     /**
      * extracts player1 from the token and the player2 value both from the given reqBody object and returns an

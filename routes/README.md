@@ -240,6 +240,29 @@ Response
 }
 ```
 ---
+**🔐 GET /game/finished/`<playerId>`** lists all games in which the is player1 `<playerId>` or player2 `<playerId>` and the status is "finished" (meaning all finished games of this player)
+```
+Response
+{
+    "games": [
+        {
+            "player1": "<usernamePlayer1>", 
+            "player2": "<usernamePlayer2>",
+            "field": "[<field>]", // JSON stringified array
+            "moveCount": 0,
+            "setCoord": [<winningCoords>],
+            "result": "" // can be 'forfeit_player1' or 'forfeit_player2' or 'win_player1' or 'win_player2' or 'draw',
+            "status": "finished",
+            "activePlayer": ,
+            "fieldHeight": 10,
+            "fieldWidth": 10,
+            "gameId": <gameId>
+        },
+        // further games skipped
+    ]
+}
+```
+---
 **🔐 GET /game** lists all games (⚠ not implemented yet)
 
 ---

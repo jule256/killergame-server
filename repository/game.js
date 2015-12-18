@@ -310,7 +310,6 @@ GameRepository = {
                     });
                 }
                 else {
-                    // @todo check if one of the players has another active game
                     resolve();
                 }
             });

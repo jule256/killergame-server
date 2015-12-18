@@ -1,5 +1,53 @@
 # KILLERGAME-SERVER
 
+## Setup
+
+### Node modules
+
+Install the dependencies with
+
+```
+<machine>:<killergame-folder> <username>$ npm install
+```
+
+### MongoDB
+
+Make sure you got a running [MongoDB](https://www.mongodb.org/) on your system.
+
+Then adapt the `default` case of the `getConnectionString()` method in the file [config/config.db.js](config/config.db.js) to fit your system's settings.
+
+### Start
+
+Start the _Killergame-Server_ with
+
+```
+<machine>:<killergame-folder> <username>$ npm start
+```
+
+You can check if the server is up and running by accessing the `ping` endpoint with a REST Client (e.g. [the RESTClient Addon for Firefox](https://addons.mozilla.org/De/firefox/addon/restclient/)):
+
+```
+GET http://127.0.0.1:3000/ping
+```
+```
+Response
+    {
+        "pong": true,
+        "ip": "<your ip address>",
+        "time": <current timestamp>
+    }
+```
+
+Check the [routes/README.md file](routes/README.md) for a more detailled description of the various endpoints.
+
+### Test
+
+Run the UnitTests with
+
+```
+<machine>:<killergame-folder> <username>$ npm test
+```
+
 ## basic concept
 
 A detailed description of the available routes can be found in the [routes/README.md file](routes/README.md).
@@ -29,4 +77,4 @@ unit testing based on https://semaphoreci.com/community/tutorials/getting-starte
 
 ## maybe
 
-chat: https://scotch.io/tutorials/a-realtime-room-chat-app-using-node-webkit-socket-io-and-mean
+~~chat: https://scotch.io/tutorials/a-realtime-room-chat-app-using-node-webkit-socket-io-and-mean~~

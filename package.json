@@ -1,11 +1,27 @@
 {
   "name": "killergame-server",
-  "version": "0.0.5",
+  "version": "0.0.6",
+  "description": "REST API of the Killergame",
+  "author": "Julian Mollik <jule@creative-coding.net>",
+  "contributors": [{
+    "name": "Dominik Süsstrunk",
+    "email": "dominik.suesstrunk@gmail.com"
+  }],
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jule256/killergame-server"
+  },
+  "keywords": [
+    "HSR", "Hochschule für Technik Rapperswil",
+    "CAS", "Certificate of Advanced Studies",
+    "FEE", "Frontend Engineering",
+    "2015", "Final Project"
+  ],
   "dependencies": {
     "bluebird": "^2.10.2",
     "body-parser": "^1.10.2",
